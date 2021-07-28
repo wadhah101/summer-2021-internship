@@ -1,0 +1,8 @@
+project:
+  name: taskcat-example
+  regions:
+    - us-west-1
+
+tests:
+  serverlessAPI-test:
+    template: ./template.yml
