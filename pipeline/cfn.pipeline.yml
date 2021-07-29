@@ -310,35 +310,6 @@ Resources:
                 ProjectName: !Ref SAMBuildDeploy
               RunOrder: 3
 
-          # - InputArtifacts:
-          #       - Name: SourceArtifacts
-          #     Name: RunTaskCat
-          #     ActionTypeId:
-          #       Category: Test
-          #       Owner: AWS
-          #       Version: "1"
-          #       Provider: CodeBuild
-          #     OutputArtifacts:
-          #       - Name: TaskCatArtifacts
-          #     Configuration:
-          #       ProjectName:
-          #         Ref: CodeBuildTaskCatTest
-          #     RunOrder: 1
-
-          #   - InputArtifacts:
-          #       - Name: TaskCatArtifacts
-          #     Name: TaskCatDashboard
-          #     ActionTypeId:
-          #       Category: Test
-          #       Owner: AWS
-          #       Version: "1"
-          #       Provider: CodeBuild
-          #     OutputArtifacts: []
-          #     Configuration:
-          #       ProjectName:
-          #         Ref: CodeBuildDashboard
-          #     RunOrder: 2
-
       ArtifactStore:
         Type: S3
         Location: !Ref PipelineBucket
