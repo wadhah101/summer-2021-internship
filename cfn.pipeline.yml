@@ -149,7 +149,7 @@ Resources:
       Environment:
         Type: LINUX_CONTAINER
         ComputeType: BUILD_GENERAL1_SMALL
-        Image: "aws/codebuild/amazonlinux2-x86_64-standard:3.0"
+        Image: "aws/codebuild/standard:5.0"
       Source:
         Type: CODEPIPELINE
       TimeoutInMinutes: 60
@@ -164,10 +164,14 @@ Resources:
       Environment:
         Type: LINUX_CONTAINER
         ComputeType: BUILD_GENERAL1_SMALL
-        Image: "aws/codebuild/amazonlinux2-x86_64-standard:3.0"
+        Image: "aws/codebuild/standard:5.0"
+        EnvironmentVariables:
+          - Name: BUCKET_NAME
+            Value: !Ref SAMBucket
       Source:
         Type: CODEPIPELINE
-      TimeoutInMinutes: 60
+        BuildSpec: buildspecs/app.buildspec.yml
+      TimeoutInMinutes: 10
 
   CodeBuildDashboard:
     Type: AWS::CodeBuild::Project
@@ -243,7 +247,6 @@ Resources:
                 ProjectName:
                   Ref: SAMBuildDeploy
               RunOrder: 1
-              # uploading to s3
 
           # - InputArtifacts:
           #       - Name: SourceArtifacts
