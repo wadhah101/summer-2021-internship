@@ -3,10 +3,6 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: CodePipeline with CodeBuild workflow to run TaskCat ,  cfn-lint , cfn-nag
 Parameters:
   # build related params
-  SAMBuildSpecFile:
-    Type: String
-    Description: location of buildspec for the project
-    Default: pipeline/buildspecs/app.buildspec.yml
   AppSAMTemplateFile:
     Type: String
     Description: location of the sam file to test and deploy
