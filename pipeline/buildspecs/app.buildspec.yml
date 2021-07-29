@@ -9,4 +9,4 @@ phases:
       - sam build --template-file ${SAM_TEMPLATE_FILE}
   post_build:
     commands:
-      - sam deploy --s3-bucket ${BUCKET_NAME} --template-file ${SAM_TEMPLATE_FILE}
+      - sam deploy --s3-bucket ${BUCKET_NAME} --template-file ${SAM_TEMPLATE_FILE} --no-fail-on-empty-changeset
