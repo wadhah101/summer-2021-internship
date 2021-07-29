@@ -2,7 +2,8 @@ version = 0.1
 [default]
 [default.deploy]
 [default.deploy.parameters]
-stack_name = "workshop-demo"
-s3_prefix = "workshop-demo"
+stack_name = "meh"
+s3_prefix = "meh"
 region = "us-west-1"
 capabilities = "CAPABILITY_IAM"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-fhiviv9z2v91"

@@ -5,4 +5,4 @@ project:
 
 tests:
   serverlessAPI-test:
-    template: ./app.template.yml
+    template: app.package.yml

@@ -12,6 +12,7 @@ phases:
   build:
     commands:
       - echo Build phase started on `date`
+      - sam package --s3-bucket ${BUCKET_NAME} --template-file ${SAM_TEMPLATE_FILE} > app.package.yml
       - taskcat test run
       - aws s3 cp --recursive --acl public-read ./taskcat_outputs s3://${BUCKET_NAME}/
 

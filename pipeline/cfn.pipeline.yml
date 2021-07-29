@@ -49,7 +49,7 @@ Metadata:
 
 Resources:
   # storage
-  TaskCatBucket:
+  LintBucket:
     Type: AWS::S3::Bucket
     DeletionPolicy: Retain
     UpdateReplacePolicy: Retain
@@ -57,11 +57,6 @@ Resources:
       AccessControl: PublicRead
       WebsiteConfiguration:
         IndexDocument: index.html
-
-  SAMBucket:
-    Type: AWS::S3::Bucket
-    Properties:
-      AccessControl: Private
 
   PipelineBucket:
     Type: AWS::S3::Bucket
@@ -164,7 +159,7 @@ Resources:
         Image: "aws/codebuild/standard:5.0"
         EnvironmentVariables:
           - Name: BUCKET_NAME
-            Value: !Ref SAMBucket
+            Value: !Ref LintBucket
           - Name: SAM_TEMPLATE_FILE
             Value: !Ref AppSAMTemplateFile
       Source:
@@ -185,7 +180,7 @@ Resources:
         Image: "aws/codebuild/standard:5.0"
         EnvironmentVariables:
           - Name: BUCKET_NAME
-            Value: !Ref SAMBucket
+            Value: !Ref LintBucket
           - Name: SAM_TEMPLATE_FILE
             Value: !Ref AppSAMTemplateFile
       Source:
@@ -206,7 +201,7 @@ Resources:
         Image: "aws/codebuild/standard:5.0"
         EnvironmentVariables:
           - Name: BUCKET_NAME
-            Value: !Ref SAMBucket
+            Value: !Ref LintBucket
           - Name: SAM_TEMPLATE_FILE
             Value: !Ref AppSAMTemplateFile
       Source:
@@ -227,7 +222,7 @@ Resources:
         Image: "aws/codebuild/standard:5.0"
         EnvironmentVariables:
           - Name: BUCKET_NAME
-            Value: !Ref SAMBucket
+            Value: !Ref LintBucket
           - Name: SAM_TEMPLATE_FILE
             Value: !Ref AppSAMTemplateFile
       Source:
@@ -352,5 +347,5 @@ Outputs:
     Value: !Sub https://console.aws.amazon.com/codepipeline/home?region=${AWS::Region}#/view/${Pipeline}
     Description: CodePipeline URL
   TaskCatDashboardUrl:
-    Value: !Sub http://${TaskCatBucket}.s3-website-us-west-1.amazonaws.com
+    Value: !Sub http://${LintBucket}.s3-website-us-west-1.amazonaws.com
     Description: URL for TaskCat Dashboard (Available after the CodePipeline completes)
