@@ -1,6 +1,6 @@
 ---
 AWSTemplateFormatVersion: "2010-09-09"
-Description: CodePipeline with CodeBuild workflow to run TaskCat test CloudFormation templates
+Description: CodePipeline with CodeBuild workflow to run TaskCat ,  cfn-lint , cfn-nag
 Parameters:
   GitHubUser:
     Type: String
@@ -139,20 +139,20 @@ Resources:
             Version: "2012-10-17"
 
   # codebuild
-  CodeBuildTaskCatTest:
-    Type: AWS::CodeBuild::Project
-    Properties:
-      Description: Run TaskCat
-      ServiceRole: !GetAtt CodeBuildRole.Arn
-      Artifacts:
-        Type: CODEPIPELINE
-      Environment:
-        Type: LINUX_CONTAINER
-        ComputeType: BUILD_GENERAL1_SMALL
-        Image: "aws/codebuild/standard:5.0"
-      Source:
-        Type: CODEPIPELINE
-      TimeoutInMinutes: 60
+  # CodeBuildTaskCatTest:
+  #   Type: AWS::CodeBuild::Project
+  #   Properties:
+  #     Description: Run TaskCat
+  #     ServiceRole: !GetAtt CodeBuildRole.Arn
+  #     Artifacts:
+  #       Type: CODEPIPELINE
+  #     Environment:
+  #       Type: LINUX_CONTAINER
+  #       ComputeType: BUILD_GENERAL1_SMALL
+  #       Image: "aws/codebuild/standard:5.0"
+  #     Source:
+  #       Type: CODEPIPELINE
+  #     TimeoutInMinutes: 60
 
   SAMBuildDeploy:
     Type: AWS::CodeBuild::Project
@@ -173,33 +173,33 @@ Resources:
         BuildSpec: buildspecs/app.buildspec.yml
       TimeoutInMinutes: 10
 
-  CodeBuildDashboard:
-    Type: AWS::CodeBuild::Project
-    Properties:
-      Description: Deploy site to S3
-      ServiceRole: !GetAtt CodeBuildRole.Arn
-      Artifacts:
-        Type: CODEPIPELINE
-      Environment:
-        Type: LINUX_CONTAINER
-        ComputeType: BUILD_GENERAL1_SMALL
-        Image: "aws/codebuild/amazonlinux2-x86_64-standard:3.0"
-      Source:
-        Type: CODEPIPELINE
-        BuildSpec: !Sub |
-          version: 0.2
-          phases:
-            install:
-              runtime-versions:
-                python: 3.7
-            post_build:
-              commands:
-                - aws s3 cp --recursive --acl public-read ./taskcat_outputs s3://${TaskCatBucket}/ 
-          artifacts:
-            type: zip
-            files:
-              - ./index.html
-      TimeoutInMinutes: 10
+  # CodeBuildDashboard:
+  #   Type: AWS::CodeBuild::Project
+  #   Properties:
+  #     Description: Deploy site to S3
+  #     ServiceRole: !GetAtt CodeBuildRole.Arn
+  #     Artifacts:
+  #       Type: CODEPIPELINE
+  #     Environment:
+  #       Type: LINUX_CONTAINER
+  #       ComputeType: BUILD_GENERAL1_SMALL
+  #       Image: "aws/codebuild/amazonlinux2-x86_64-standard:3.0"
+  #     Source:
+  #       Type: CODEPIPELINE
+  #       BuildSpec: !Sub |
+  #         version: 0.2
+  #         phases:
+  #           install:
+  #             runtime-versions:
+  #               python: 3.7
+  #           post_build:
+  #             commands:
+  #               - aws s3 cp --recursive --acl public-read ./taskcat_outputs s3://${TaskCatBucket}/
+  #         artifacts:
+  #           type: zip
+  #           files:
+  #             - ./index.html
+  #     TimeoutInMinutes: 10
 
   # pipeline
   PipelineBucket:
@@ -235,7 +235,7 @@ Resources:
           Actions:
             - InputArtifacts:
                 - Name: SourceArtifacts
-              Name: build&deploySAM
+              Name: buildAnddeploySAM
               ActionTypeId:
                 Category: Build
                 Owner: AWS
