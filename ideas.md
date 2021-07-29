@@ -2,6 +2,8 @@
 
 ## steps
 
+TODO define upload bucket as env variable
+
 steps to make the project work :
     - Make basic python sam app that depends on params and s3
     - step 1 : cfn lint

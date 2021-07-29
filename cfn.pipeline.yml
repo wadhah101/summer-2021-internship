@@ -9,7 +9,7 @@ Parameters:
   GitHubRepo:
     Type: String
     Description: GitHub Repo to pull from. Only the Name. not the URL
-    Default: "taskcat-demo"
+    Default: "workshop-sam-cfn"
   GitHubBranch:
     Type: String
     Description: GitHub Branch
@@ -41,13 +41,20 @@ Metadata:
         default: GitHub Branch Name
 
 Resources:
-  SiteBucket:
+  # storage
+  TaskCatBucket:
     Type: AWS::S3::Bucket
     DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Properties:
       AccessControl: PublicRead
       WebsiteConfiguration:
         IndexDocument: index.html
+
+  SAMBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      AccessControl: Private
 
   # roles
   CodePipelineRole:
@@ -131,7 +138,23 @@ Resources:
                 Resource: "*"
             Version: "2012-10-17"
 
+  # codebuild
   CodeBuildTaskCatTest:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Description: Run TaskCat
+      ServiceRole: !GetAtt CodeBuildRole.Arn
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: "aws/codebuild/amazonlinux2-x86_64-standard:3.0"
+      Source:
+        Type: CODEPIPELINE
+      TimeoutInMinutes: 60
+
+  SAMBuildDeploy:
     Type: AWS::CodeBuild::Project
     Properties:
       Description: Run TaskCat
@@ -167,13 +190,14 @@ Resources:
                 python: 3.7
             post_build:
               commands:
-                - aws s3 cp --recursive --acl public-read ./taskcat_outputs s3://${SiteBucket}/ 
+                - aws s3 cp --recursive --acl public-read ./taskcat_outputs s3://${TaskCatBucket}/ 
           artifacts:
             type: zip
             files:
               - ./index.html
       TimeoutInMinutes: 10
 
+  # pipeline
   PipelineBucket:
     Type: AWS::S3::Bucket
     DeletionPolicy: Delete
@@ -183,6 +207,7 @@ Resources:
     Properties:
       RoleArn: !GetAtt CodePipelineRole.Arn
       Stages:
+        # checking source code
         - Name: Source
           Actions:
             - InputArtifacts: []
@@ -200,67 +225,55 @@ Resources:
                 Branch: !Ref GitHubBranch
                 OAuthToken: !Ref GitHubToken
               RunOrder: 1
+
+              # starting actual build
         - Name: Build
           Actions:
-            # - InputArtifacts:
-            #     - Name: SourceArtifacts
-            #   Name: Setup
-            #   ActionTypeId:
-            #     Category: Test
-            #     Owner: AWS
-            #     Version: "1"
-            #     Provider: CodeBuild
-            #   OutputArtifacts:
-            #     - Name: SetupArtifacts
-            #   Configuration:
-            #     ProjectName:
-            #       Ref: CodeBuildSetup
-            #   RunOrder: 1
-
-            # runing taskcat tests
             - InputArtifacts:
                 - Name: SourceArtifacts
-              Name: RunTaskCat
+              Name: build&deploySAM
               ActionTypeId:
-                Category: Test
+                Category: Build
                 Owner: AWS
                 Version: "1"
                 Provider: CodeBuild
               OutputArtifacts:
-                - Name: TaskCatArtifacts
+                - Name: SAMArtifacts
               Configuration:
                 ProjectName:
-                  Ref: CodeBuildTaskCatTest
+                  Ref: SAMBuildDeploy
               RunOrder: 1
               # uploading to s3
-            - InputArtifacts:
-                - Name: TaskCatArtifacts
-              Name: TaskCatDashboard
-              ActionTypeId:
-                Category: Test
-                Owner: AWS
-                Version: "1"
-                Provider: CodeBuild
-              OutputArtifacts: []
-              Configuration:
-                ProjectName:
-                  Ref: CodeBuildDashboard
-              RunOrder: 2
-        # - Name: Cleanup
-        #   Actions:
-        #     - InputArtifacts:
-        #         - Name: SourceArtifacts
-        #       Name: RemoveS3Buckets
-        #       ActionTypeId:
-        #         Category: Test
-        #         Owner: AWS
-        #         Version: "1"
-        #         Provider: CodeBuild
-        #       OutputArtifacts: []
-        #       Configuration:
-        #         ProjectName:
-        #           Ref: CodeBuildCleanup
-        #       RunOrder: 1
+
+          # - InputArtifacts:
+          #       - Name: SourceArtifacts
+          #     Name: RunTaskCat
+          #     ActionTypeId:
+          #       Category: Test
+          #       Owner: AWS
+          #       Version: "1"
+          #       Provider: CodeBuild
+          #     OutputArtifacts:
+          #       - Name: TaskCatArtifacts
+          #     Configuration:
+          #       ProjectName:
+          #         Ref: CodeBuildTaskCatTest
+          #     RunOrder: 1
+
+          #   - InputArtifacts:
+          #       - Name: TaskCatArtifacts
+          #     Name: TaskCatDashboard
+          #     ActionTypeId:
+          #       Category: Test
+          #       Owner: AWS
+          #       Version: "1"
+          #       Provider: CodeBuild
+          #     OutputArtifacts: []
+          #     Configuration:
+          #       ProjectName:
+          #         Ref: CodeBuildDashboard
+          #     RunOrder: 2
+
       ArtifactStore:
         Type: S3
         Location: !Ref PipelineBucket
@@ -269,5 +282,5 @@ Outputs:
     Value: !Sub https://console.aws.amazon.com/codepipeline/home?region=${AWS::Region}#/view/${Pipeline}
     Description: CodePipeline URL
   TaskCatDashboardUrl:
-    Value: !Sub http://${SiteBucket}.s3-website-us-west-1.amazonaws.com
+    Value: !Sub http://${TaskCatBucket}.s3-website-us-west-1.amazonaws.com
     Description: URL for TaskCat Dashboard (Available after the CodePipeline completes)
