@@ -2,7 +2,7 @@ version = 0.1
 [default]
 [default.deploy]
 [default.deploy.parameters]
-stack_name = "meh"
-s3_prefix = "meh"
+stack_name = "workshop-infra"
+s3_prefix = "workshop-infra"
 region = "us-west-1"
 capabilities = "CAPABILITY_IAM"
