@@ -2,6 +2,14 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Description: CodePipeline with CodeBuild workflow to run TaskCat ,  cfn-lint , cfn-nag
 Parameters:
+  SAMBuildSpecFile:
+    Type: String
+    Description: location of buildspec for the project
+    Default: buildspecs/app.buildspec.yml
+  AppSAMTemplateFile:
+    Type: String
+    Description: location of the sam file to test and deploy
+    Default: app.template.yml
   GitHubUser:
     Type: String
     Description: GitHub User
@@ -56,6 +64,10 @@ Resources:
     Properties:
       AccessControl: Private
 
+  PipelineBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Delete
+
   # roles
   CodePipelineRole:
     Type: AWS::IAM::Role
@@ -97,6 +109,8 @@ Resources:
                 Resource: "*"
                 Effect: Allow
             Version: "2012-10-17"
+
+  # specify roles
   CodeBuildRole:
     Type: AWS::IAM::Role
     Properties:
@@ -168,9 +182,11 @@ Resources:
         EnvironmentVariables:
           - Name: BUCKET_NAME
             Value: !Ref SAMBucket
+          - Name: SAM_TEMPLATE_FILE
+            Value: !Ref AppSAMTemplateFile
       Source:
         Type: CODEPIPELINE
-        BuildSpec: buildspecs/app.buildspec.yml
+        BuildSpec: !Ref SAMBuildSpecFile
       TimeoutInMinutes: 10
 
   # CodeBuildDashboard:
@@ -202,10 +218,6 @@ Resources:
   #     TimeoutInMinutes: 10
 
   # pipeline
-  PipelineBucket:
-    Type: AWS::S3::Bucket
-    DeletionPolicy: Delete
-
   Pipeline:
     Type: AWS::CodePipeline::Pipeline
     Properties:
