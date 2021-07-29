@@ -12,7 +12,8 @@ phases:
   build:
     commands:
       - echo Linting started on `date`
-      - cfn-lint ${SAM_TEMPLATE_FILE}
+      - cfn-lint ${SAM_TEMPLATE_FILE} | tee lint.txt
   post_build:
     commands:
       - echo Linting completed on `date`
+      - aws s3 cp --acl public-read ./lint.txt s3://${BUCKET_NAME}/

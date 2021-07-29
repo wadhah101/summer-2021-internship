@@ -10,7 +10,9 @@ phases:
   build:
     commands:
       - echo Linting started on `date`
-      - cfn_nag_scan --input-path ${SAM_TEMPLATE_FILE}
+      # - TODO save warnings in s3 bucket
+      - cfn_nag_scan --input-path ${SAM_TEMPLATE_FILE} | tee nag.txt
   post_build:
     commands:
       - echo Linting completed on `date`
+      - aws s3 cp --acl public-read ./nag.txt s3://${BUCKET_NAME}/
