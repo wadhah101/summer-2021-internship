@@ -8,7 +8,7 @@ Globals:
     Timeout: 3
 
 Resources:
-HelloWorldFunction:
+  HelloWorldFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: hello_world/
