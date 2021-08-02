@@ -8,44 +8,13 @@ Parameters:
     Description: location of the sam file to test and deploy
     Default: app.template.yml
 
-  # github related variables
-  GitHubUser:
+  InfraRepo:
     Type: String
-    Description: GitHub User
-    Default: "wadhah101"
-  GitHubRepo:
-    Type: String
-    Description: GitHub Repo to pull from. Only the Name. not the URL
-    Default: "workshop-sam-cfn"
-  GitHubBranch:
-    Type: String
-    Description: GitHub Branch
-    Default: "master"
-  GitHubToken:
-    NoEcho: true
-    Type: String
-    Default: "{{resolve:secretsmanager:github/personal-access-token:SecretString}}"
-    Description: GitHub Token. Must be defined in AWS Secrets Manager and here https://github.com/settings/tokens
+    Default: https://git-codecommit.us-west-1.amazonaws.com/v1/repos/cfn-test-lint-pipeline
 
-Metadata:
-  AWS::CloudFormation::Interface:
-    ParameterGroups:
-      - Label:
-          default: "GitHub Configuration"
-        Parameters:
-          - GitHubToken
-          - GitHubUser
-          - GitHubRepo
-          - GitHubBranch
-    ParameterLabels:
-      GitHubToken:
-        default: GitHub OAuth2 Token
-      GitHubUser:
-        default: GitHub User/Org Name
-      GitHubRepo:
-        default: GitHub Repository Name
-      GitHubBranch:
-        default: GitHub Branch Name
+  InfraRepoBranch:
+    Type: String
+    Default: master
 
 Resources:
   # storage
@@ -243,16 +212,14 @@ Resources:
               Name: Source
               ActionTypeId:
                 Category: Source
-                Owner: ThirdParty
+                Owner: AWS
                 Version: "1"
-                Provider: GitHub
+                Provider: CodeCommit
               OutputArtifacts:
                 - Name: SourceArtifacts
               Configuration:
-                Owner: !Ref GitHubUser
-                Repo: !Ref GitHubRepo
-                Branch: !Ref GitHubBranch
-                OAuthToken: !Ref GitHubToken
+                RepositoryName: !Ref InfraRepo
+                BranchName: !Ref InfraRepoBranch
               RunOrder: 1
 
         - Name: LintingTesting
