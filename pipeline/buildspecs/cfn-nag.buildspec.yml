@@ -11,7 +11,8 @@ phases:
     commands:
       - echo Linting started on `date`
       # - TODO save warnings in s3 bucket
-      - cfn_nag_scan --input-path ${SAM_TEMPLATE_FILE} | tee nag.txt
+      - cfn_nag_scan --input-path ${SAM_TEMPLATE_FILE} > nag.txt
+      - cat nag.txt
   post_build:
     commands:
       - echo Linting completed on `date`
