@@ -1,0 +1,1 @@
+aws cloudformation create-stack --stack-name cfn-lint-test-pipeline  --capabilities CAPABILITY_NAMED_IAM --disable-rollback   --template-body file://pipeline/cfn.pipeline.yml

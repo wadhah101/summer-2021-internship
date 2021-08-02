@@ -8,9 +8,13 @@ Parameters:
     Description: location of the sam file to test and deploy
     Default: app.template.yml
 
+  InfraRepoArn:
+    Type: String
+    Default: arn:aws:codecommit:us-west-1:477886346812:cfn-test-lint-pipeline
+
   InfraRepo:
     Type: String
-    Default: https://git-codecommit.us-west-1.amazonaws.com/v1/repos/cfn-test-lint-pipeline
+    Default: cfn-test-lint-pipeline
 
   InfraRepoBranch:
     Type: String
@@ -48,6 +52,10 @@ Resources:
         - PolicyName: codepipeline-service
           PolicyDocument:
             Statement:
+              - Action:
+                  - codecommit:*
+                Resource: !Ref InfraRepoArn
+                Effect: Allow
               - Action:
                   - logs:*
                   - lambda:*
