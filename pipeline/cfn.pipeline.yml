@@ -288,6 +288,55 @@ Resources:
       ArtifactStore:
         Type: S3
         Location: !Ref PipelineBucket
+
+  # messaging
+  MySNSTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: "SampleTopic"
+
+  EmailResultRule:
+    Type: "AWS::Events::Rule"
+    Properties:
+      EventPattern:
+        source:
+          - aws.codepipeline
+        detail-type:
+          - CodePipeline Pipeline Execution State Change
+        resources:
+          - !Ref Pipeline
+        detail:
+          state:
+            - SUCCEEDED
+            - FAILED
+
+      State: ENABLED
+
+      Targets:
+        - Arn: !Ref MySNSTopic
+          Id: "OpsTopic"
+
+  EventTopicPolicy:
+    Type: "AWS::SNS::TopicPolicy"
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: events.amazonaws.com
+            Action: "sns:Publish"
+            Resource: "*"
+      Topics:
+        - !Ref MySNSTopic
+      # Targets:
+      #   - Arn: "arn:aws:sqs:us-west-2:081035103721:demoSQS"
+      #     Id: Id1234
+      #     RetryPolicy:
+      #       MaximumRetryAttempts: 4
+      #       MaximumEventAgeInSeconds: 400
+      #     DeadLetterConfig:
+      #       Arn: "arn:aws:sqs:us-west-2:081035103721:demoDLQ"
+
 Outputs:
   PipelineUrl:
     Value: !Sub https://console.aws.amazon.com/codepipeline/home?region=${AWS::Region}#/view/${Pipeline}
