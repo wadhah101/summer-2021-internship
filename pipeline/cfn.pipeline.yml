@@ -281,6 +281,7 @@ Resources:
                 Provider: CodeBuild
               Configuration:
                 ProjectName: !Ref CFNLintBuild
+                PrimarySource: SourceArtifacts
               RunOrder: 1
 
             - InputArtifacts:
@@ -296,6 +297,7 @@ Resources:
                 Provider: CodeBuild
               Configuration:
                 ProjectName: !Ref CFNNAGBuild
+                PrimarySource: SourceArtifacts
               RunOrder: 1
 
             - InputArtifacts:
@@ -309,6 +311,8 @@ Resources:
                 Provider: CodeBuild
               Configuration:
                 ProjectName: !Ref TaskCatBuild
+                PrimarySource: SourceArtifacts
+
               RunOrder: 1
 
               # starting actual build
@@ -316,6 +320,7 @@ Resources:
           Actions:
             - InputArtifacts:
                 - Name: PackagingArtifacts
+                - Name: SourceArtifacts
               Name: buildAnddeploySAM
               ActionTypeId:
                 Category: Build
@@ -326,6 +331,8 @@ Resources:
                 - Name: SAMArtifacts
               Configuration:
                 ProjectName: !Ref SAMBuildDeploy
+                PrimarySource: SourceArtifacts
+
               RunOrder: 3
 
       ArtifactStore:
