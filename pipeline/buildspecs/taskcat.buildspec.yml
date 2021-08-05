@@ -6,20 +6,15 @@ phases:
     commands:
       - echo install phase started on `date`
       - python --version
-      # - "curl -O https://bootstrap.pypa.io/get-pip.py"
-      # - python3 get-pip.py
-      # - pip3 install taskcat
+
   build:
     commands:
       - echo Build phase started on `date`
-      # - sam package --s3-bucket ${BUCKET_NAME} --template-file ${SAM_TEMPLATE_FILE} > app.package.yml
-      # - taskcat test run -i pipeline/.taskcat.yml
-      # - aws s3 cp --recursive --acl public-read ./taskcat_outputs s3://${BUCKET_NAME}/
-
+      - cp  $CODEBUILD_SRC_DIR_PackagingArtifacts/${SAM_TEMPLATE_FILE} app.package.yml
+      - taskcat test run -i pipeline/.taskcat.yml
   post_build:
     commands:
       - echo Build completed on `date`
-# artifacts:
-#   type: zip
-#   files:
-#     - ./index.html
+artifacts:
+  files:
+    - taskcat_outputs/**/*
