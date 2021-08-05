@@ -340,9 +340,9 @@ Resources:
                 - Name: taskcatArtifacts
                 - Name: NagArtifacts
                 - Name: LintingArtifacts
-              Name: buildAnddeploySAM
+              Name: uploadTestingResult
               ActionTypeId:
-                Category: Deploy
+                Category: Build
                 Owner: AWS
                 Version: "1"
                 Provider: Codebuild
