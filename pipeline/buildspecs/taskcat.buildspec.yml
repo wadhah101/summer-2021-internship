@@ -6,6 +6,7 @@ phases:
     commands:
       - echo install phase started on `date`
       - python --version
+      - pip install --upgrade taskcat
 
   build:
     commands:
