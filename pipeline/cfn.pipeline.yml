@@ -280,7 +280,7 @@ Resources:
                 Provider: CodeBuild
               Configuration:
                 ProjectName: !Ref CFNLintBuild
-              RunOrder: 2
+              RunOrder: 1
 
             - InputArtifacts:
                 - Name: SourceArtifacts
@@ -294,7 +294,7 @@ Resources:
                 Provider: CodeBuild
               Configuration:
                 ProjectName: !Ref CFNNAGBuild
-              RunOrder: 2
+              RunOrder: 1
 
             - InputArtifacts:
                 - Name: SourceArtifacts
@@ -306,7 +306,7 @@ Resources:
                 Provider: CodeBuild
               Configuration:
                 ProjectName: !Ref TaskCatBuild
-              RunOrder: 3
+              RunOrder: 1
 
               # starting actual build
         - Name: Build
