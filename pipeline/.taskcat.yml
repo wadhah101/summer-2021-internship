@@ -2,7 +2,6 @@ project:
   name: taskcat-example
   regions:
     - us-west-1
-  package_lambda: false
 
 tests:
   serverlessAPI-test:
