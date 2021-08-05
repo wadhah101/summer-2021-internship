@@ -13,4 +13,8 @@ phases:
   post_build:
     commands:
       - echo Linting completed on `date`
-      - aws s3 cp --acl public-read ./nag.txt s3://${BUCKET_NAME}/
+      # - aws s3 cp --acl public-read ./nag.txt s3://${BUCKET_NAME}/
+
+artifacts:
+  files:
+    - nag.txt
