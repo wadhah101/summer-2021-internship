@@ -2,7 +2,9 @@ version = 0.1
 [default]
 [default.deploy]
 [default.deploy.parameters]
-stack_name = "workshop-infra"
-s3_prefix = "workshop-infra"
+stack_name = "cfn-lint-test-pipeline"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-1bc9iel2dapz1"
+s3_prefix = "cfn-lint-test-pipeline"
 region = "us-west-1"
 capabilities = "CAPABILITY_IAM"
+parameter_overrides = "AppSAMTemplateFile=\"app.template.yml\" InfraRepoArn=\"arn:aws:codecommit:us-west-1:477886346812:cfn-test-lint-pipeline\" InfraRepo=\"cfn-test-lint-pipeline\" InfraRepoBranch=\"master\""

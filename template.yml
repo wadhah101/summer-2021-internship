@@ -1,6 +1,7 @@
 ---
 AWSTemplateFormatVersion: "2010-09-09"
 Description: CodePipeline with CodeBuild workflow to run TaskCat ,  cfn-lint , cfn-nag
+Transform: AWS::Serverless-2016-10-31
 Parameters:
   # build related params
   AppSAMTemplateFile:
@@ -19,6 +20,10 @@ Parameters:
   InfraRepoBranch:
     Type: String
     Default: master
+
+Globals:
+  Function:
+    Timeout: 3
 
 Resources:
   # storage
