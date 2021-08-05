@@ -1,8 +1,5 @@
 version: 0.2
 phases:
-  install:
-    commands:
-      - echo install phase started on `date`
   build:
     commands:
       - aws s3 cp $CODEBUILD_SRC_DIR_NagArtifacts/* s3://${BUCKET_NAME}/
@@ -10,4 +7,4 @@ phases:
       - aws s3 cp --recursive --acl public-read $CODEBUILD_SRC_DIR_taskcatArtifacts/taskcat_outputs s3://${BUCKET_NAME}/
   post_build:
     commands:
-      - echo Linting completed on `date`
+      - echo upload completed on `date`
