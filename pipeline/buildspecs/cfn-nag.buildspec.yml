@@ -1,12 +1,9 @@
 version: 0.2
 phases:
   install:
-    runtime-versions:
-      ruby: 2.7
     commands:
       - echo install phase started on `date`
       - ruby --version
-      - gem install cfn-nag
   build:
     commands:
       - echo Linting started on `date`

@@ -154,7 +154,7 @@ Resources:
       Environment:
         Type: LINUX_CONTAINER
         ComputeType: BUILD_GENERAL1_SMALL
-        Image: "aws/codebuild/standard:5.0"
+        Image: "stelligent/cfn_nag"
         EnvironmentVariables:
           - Name: BUCKET_NAME
             Value: !Ref LintBucket
@@ -208,6 +208,7 @@ Resources:
       TimeoutInMinutes: 10
 
   # pipeline
+  # TODO build docker image for building and use it
   Pipeline:
     Type: AWS::CodePipeline::Pipeline
     Properties:
