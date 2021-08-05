@@ -348,7 +348,7 @@ Resources:
                 Provider: Codebuild
               Configuration:
                 PrimarySource: SourceArtifacts
-                ProjectName: !Ref LintingBucket
+                ProjectName: !Ref LintDeployBuild
 
               # starting actual build
         - Name: Build
