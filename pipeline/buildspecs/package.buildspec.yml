@@ -12,6 +12,6 @@ phases:
       - sam package --s3-bucket ${BUCKET_NAME} --template-file ${SAM_TEMPLATE_FILE} > output/${SAM_TEMPLATE_FILE}
 
 artifacts:
+  discard-paths: yes
   files:
-    - pipeline/**/*
     - output/${SAM_TEMPLATE_FILE}

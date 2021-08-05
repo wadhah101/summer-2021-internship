@@ -270,6 +270,7 @@ Resources:
           Actions:
             - InputArtifacts:
                 - Name: PackagingArtifacts
+                - Name: SourceArtifacts
               OutputArtifacts:
                 - Name: LintingArtifacts
               Name: LintSam
@@ -284,6 +285,7 @@ Resources:
 
             - InputArtifacts:
                 - Name: PackagingArtifacts
+                - Name: SourceArtifacts
               OutputArtifacts:
                 - Name: NagArtifacts
               Name: NagSam
@@ -298,6 +300,7 @@ Resources:
 
             - InputArtifacts:
                 - Name: PackagingArtifacts
+                - Name: SourceArtifacts
               Name: Taskcat
               ActionTypeId:
                 Category: Build
