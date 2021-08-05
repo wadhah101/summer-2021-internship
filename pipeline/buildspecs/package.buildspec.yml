@@ -13,4 +13,5 @@ phases:
 
 artifacts:
   files:
+    - pipeline/*
     - output/${SAM_TEMPLATE_FILE}
