@@ -24,6 +24,9 @@ Resources:
   # storage
   CodeBucket:
     Type: AWS::S3::Bucket
+
+  LintingBucket:
+    Type: AWS::S3::Bucket
     DeletionPolicy: Retain
     UpdateReplacePolicy: Retain
     Properties:
@@ -223,6 +226,26 @@ Resources:
         BuildSpec: pipeline/buildspecs/app.buildspec.yml
       TimeoutInMinutes: 10
 
+  LintDeployBuild:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Description: upload testing result to s3
+      ServiceRole: !GetAtt CodeBuildRole.Arn
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: "aws/codebuild/standard:5.0"
+        EnvironmentVariables:
+          - Name: BUCKET_NAME
+            Value: !Ref LintingBucket
+
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: pipeline/buildspecs/upload.buildspec.yml
+      TimeoutInMinutes: 10
+
   # pipeline
   # TODO build docker image for building and use it
   Pipeline:
@@ -312,6 +335,23 @@ Resources:
 
               RunOrder: 1
 
+        - Name: Upload
+          Actions:
+            - InputArtifacts:
+                - Name: SourceArtifacts
+                - Name: taskcatArtifacts
+                - Name: NagArtifacts
+                - Name: LintingArtifacts
+              Name: buildAnddeploySAM
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Version: "1"
+                Provider: Codebuild
+              Configuration:
+                PrimarySource: SourceArtifacts
+                ProjectName: !Ref LintingBucket
+
               # starting actual build
         - Name: Build
           Actions:
@@ -330,8 +370,6 @@ Resources:
                 ProjectName: !Ref SAMBuildDeploy
                 PrimarySource: SourceArtifacts
 
-              RunOrder: 3
-
       ArtifactStore:
         Type: S3
         Location: !Ref PipelineBucket
@@ -340,7 +378,7 @@ Resources:
   MySNSTopic:
     Type: AWS::SNS::Topic
     Properties:
-      TopicName: "SampleTopic"
+      TopicName: "cfntopic"
 
   EmailResultRule:
     Type: "AWS::Events::Rule"
