@@ -176,6 +176,7 @@ Resources:
         Type: LINUX_CONTAINER
         ComputeType: BUILD_GENERAL1_SMALL
         Image: "taskcat/taskcat"
+        PrivilegedMode: true
         EnvironmentVariables:
           - Name: BUCKET_NAME
             Value: !Ref LintBucket
@@ -303,6 +304,8 @@ Resources:
             - InputArtifacts:
                 - Name: PackagingArtifacts
                 - Name: SourceArtifacts
+              OutputArtifacts:
+                - Name: taskcatArtifacts
               Name: Taskcat
               ActionTypeId:
                 Category: Build
