@@ -27,8 +27,8 @@ Resources:
 
   LintingBucket:
     Type: AWS::S3::Bucket
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
+    # DeletionPolicy: Retain
+    # UpdateReplacePolicy: Retain
     Properties:
       AccessControl: PublicRead
       WebsiteConfiguration:
@@ -340,15 +340,15 @@ Resources:
                 - Name: taskcatArtifacts
                 - Name: NagArtifacts
                 - Name: LintingArtifacts
-            Name: Upload
-            ActionTypeId:
-              Category: Build
-              Owner: AWS
-              Version: "1"
-              Provider: Codebuild
-            Configuration:
-              PrimarySource: SourceArtifacts
-              ProjectName: !Ref LintDeployBuild
+              Name: UploadRes
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: "1"
+                Provider: CodeBuild
+              Configuration:
+                PrimarySource: SourceArtifacts
+                ProjectName: !Ref LintDeployBuild
 
               # starting actual build
         - Name: Build

@@ -5,8 +5,8 @@ phases:
       - echo install phase started on `date`
   build:
     commands:
-      - aws s3 cp --acl $CODEBUILD_SRC_DIR_NagArtifacts/* s3://${BUCKET_NAME}/
-      - aws s3 cp --acl $CODEBUILD_SRC_DIR_LintingArtifacts/* s3://${BUCKET_NAME}/
+      - aws s3 cp $CODEBUILD_SRC_DIR_NagArtifacts/* s3://${BUCKET_NAME}/
+      - aws s3 cp $CODEBUILD_SRC_DIR_LintingArtifacts/* s3://${BUCKET_NAME}/
       - aws s3 cp --recursive --acl public-read $CODEBUILD_SRC_DIR_taskcatArtifacts/taskcat_outputs s3://${BUCKET_NAME}/
   post_build:
     commands:
