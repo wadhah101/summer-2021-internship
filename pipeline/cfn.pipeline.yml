@@ -420,6 +420,13 @@ Resources:
       #     DeadLetterConfig:
       #       Arn: "arn:aws:sqs:us-west-2:081035103721:demoDLQ"
 
+  MySubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      Endpoint: wadhah.mahroug15@gmail.com
+      Protocol: email
+      TopicArn: !Ref "MySNSTopic"
+
 Outputs:
   PipelineUrl:
     Value: !Sub https://console.aws.amazon.com/codepipeline/home?region=${AWS::Region}#/view/${Pipeline}
