@@ -2,6 +2,7 @@ project:
   name: taskcat-example
   regions:
     - us-west-1
+  # lambdas are already packaged in previous stage , setting this to true (default) will crash the container as apparently it needs docker and it doesn't seem to work well inside a container image defined in codebuild
   package_lambda: false
 
 tests:

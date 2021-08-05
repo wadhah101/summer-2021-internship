@@ -22,7 +22,7 @@ Parameters:
 
 Resources:
   # storage
-  LintBucket:
+  CodeBucket:
     Type: AWS::S3::Bucket
     DeletionPolicy: Retain
     UpdateReplacePolicy: Retain
@@ -135,8 +135,6 @@ Resources:
         ComputeType: BUILD_GENERAL1_SMALL
         Image: "masahide/cfn-python-lint"
         EnvironmentVariables:
-          - Name: BUCKET_NAME
-            Value: !Ref LintBucket
           - Name: SAM_TEMPLATE_FILE
             Value: !Ref AppSAMTemplateFile
       Source:
@@ -156,8 +154,6 @@ Resources:
         ComputeType: BUILD_GENERAL1_SMALL
         Image: "stelligent/cfn_nag"
         EnvironmentVariables:
-          - Name: BUCKET_NAME
-            Value: !Ref LintBucket
           - Name: SAM_TEMPLATE_FILE
             Value: !Ref AppSAMTemplateFile
       Source:
@@ -178,8 +174,6 @@ Resources:
         Image: "taskcat/taskcat"
         PrivilegedMode: true
         EnvironmentVariables:
-          - Name: BUCKET_NAME
-            Value: !Ref LintBucket
           - Name: SAM_TEMPLATE_FILE
             Value: !Ref AppSAMTemplateFile
       Source:
@@ -200,7 +194,7 @@ Resources:
         Image: "aws/codebuild/standard:5.0"
         EnvironmentVariables:
           - Name: BUCKET_NAME
-            Value: !Ref LintBucket
+            Value: !Ref CodeBucket
           - Name: SAM_TEMPLATE_FILE
             Value: !Ref AppSAMTemplateFile
       Source:
@@ -221,7 +215,7 @@ Resources:
         Image: "aws/codebuild/standard:5.0"
         EnvironmentVariables:
           - Name: BUCKET_NAME
-            Value: !Ref LintBucket
+            Value: !Ref CodeBucket
           - Name: SAM_TEMPLATE_FILE
             Value: !Ref AppSAMTemplateFile
       Source:
@@ -395,5 +389,5 @@ Outputs:
     Value: !Sub https://console.aws.amazon.com/codepipeline/home?region=${AWS::Region}#/view/${Pipeline}
     Description: CodePipeline URL
   TaskCatDashboardUrl:
-    Value: !Sub http://${LintBucket}.s3-website-us-west-1.amazonaws.com
+    Value: !Sub http://${CodeBucket}.s3-website-us-west-1.amazonaws.com
     Description: URL for TaskCat Dashboard (Available after the CodePipeline completes)
