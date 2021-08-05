@@ -386,6 +386,12 @@ Resources:
           - aws.codepipeline
         detail-type:
           - CodePipeline Pipeline Execution State Change
+        detail:
+          state:
+            - SUCCEEDED
+            - FAILED
+        resources:
+          - !Ref Pipeline
 
       State: ENABLED
 
