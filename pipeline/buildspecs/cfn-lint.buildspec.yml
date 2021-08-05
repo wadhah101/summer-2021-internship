@@ -1,20 +1,19 @@
 version: 0.2
 phases:
   install:
-    runtime-versions:
-      python: 3.7
     commands:
       - echo install phase started on `date`
       - python --version
-      - "curl -O https://bootstrap.pypa.io/get-pip.py"
-      - python3 get-pip.py
-      - pip install cfn-lint
   build:
     commands:
       - echo Linting started on `date`
-      - cfn-lint ${SAM_TEMPLATE_FILE} > lint.txt
-      - cat lint.txt
+      - mkdir output
+      - cfn-lint ${SAM_TEMPLATE_FILE} > output/lint.txt
+      - cat output/lint.txt
   post_build:
     commands:
       - echo Linting completed on `date`
-      - aws s3 cp --acl public-read ./lint.txt s3://${BUCKET_NAME}/
+
+artifacts:
+  files:
+    - "output/*"

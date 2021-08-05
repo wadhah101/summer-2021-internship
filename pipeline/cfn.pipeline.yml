@@ -133,7 +133,7 @@ Resources:
       Environment:
         Type: LINUX_CONTAINER
         ComputeType: BUILD_GENERAL1_SMALL
-        Image: "aws/codebuild/standard:5.0"
+        Image: "masahide/cfn-python-lint"
         EnvironmentVariables:
           - Name: BUCKET_NAME
             Value: !Ref LintBucket
