@@ -235,6 +235,8 @@ Resources:
           Actions:
             - InputArtifacts:
                 - Name: SourceArtifacts
+              OutputArtifacts:
+                - Name: LintingArtifacts
               Name: LintSam
               ActionTypeId:
                 Category: Build
@@ -247,6 +249,8 @@ Resources:
 
             - InputArtifacts:
                 - Name: SourceArtifacts
+              OutputArtifacts:
+                - Name: NagArtifacts
               Name: NagSam
               ActionTypeId:
                 Category: Build
