@@ -385,7 +385,7 @@ Resources:
         source:
           - aws.codepipeline
         detail-type:
-          - CodePipeline Action Execution State Change
+          - CodePipeline Pipeline Execution State Change
 
       State: ENABLED
 
