@@ -147,7 +147,7 @@ Resources:
             Value: !Ref AppSAMTemplateFile
       Source:
         Type: CODEPIPELINE
-        BuildSpec: pipeline/buildspecs/cfn-lint.buildspec.yml
+        BuildSpec: buildspecs/cfn-lint.buildspec.yml
       TimeoutInMinutes: 10
 
   CFNNAGBuild:
@@ -166,7 +166,7 @@ Resources:
             Value: !Ref AppSAMTemplateFile
       Source:
         Type: CODEPIPELINE
-        BuildSpec: pipeline/buildspecs/cfn-nag.buildspec.yml
+        BuildSpec: buildspecs/cfn-nag.buildspec.yml
       TimeoutInMinutes: 10
 
   TaskCatBuild:
@@ -186,7 +186,7 @@ Resources:
             Value: !Ref AppSAMTemplateFile
       Source:
         Type: CODEPIPELINE
-        BuildSpec: pipeline/buildspecs/taskcat.buildspec.yml
+        BuildSpec: buildspecs/taskcat.buildspec.yml
       TimeoutInMinutes: 60
 
   PackageSamBuild:
@@ -207,7 +207,7 @@ Resources:
             Value: !Ref AppSAMTemplateFile
       Source:
         Type: CODEPIPELINE
-        BuildSpec: pipeline/buildspecs/package.buildspec.yml
+        BuildSpec: buildspecs/package.buildspec.yml
       TimeoutInMinutes: 60
 
   SAMBuildDeploy:
@@ -228,7 +228,7 @@ Resources:
             Value: !Ref AppSAMTemplateFile
       Source:
         Type: CODEPIPELINE
-        BuildSpec: pipeline/buildspecs/app.buildspec.yml
+        BuildSpec: buildspecs/app.buildspec.yml
       TimeoutInMinutes: 10
 
   LintDeployBuild:
@@ -248,7 +248,7 @@ Resources:
 
       Source:
         Type: CODEPIPELINE
-        BuildSpec: pipeline/buildspecs/upload.buildspec.yml
+        BuildSpec: buildspecs/upload.buildspec.yml
       TimeoutInMinutes: 10
 
   Pipeline:
