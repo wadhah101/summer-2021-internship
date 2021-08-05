@@ -175,7 +175,7 @@ Resources:
       Environment:
         Type: LINUX_CONTAINER
         ComputeType: BUILD_GENERAL1_SMALL
-        Image: "aws/codebuild/standard:5.0"
+        Image: "taskcat/taskcat"
         EnvironmentVariables:
           - Name: BUCKET_NAME
             Value: !Ref LintBucket
@@ -184,6 +184,27 @@ Resources:
       Source:
         Type: CODEPIPELINE
         BuildSpec: pipeline/buildspecs/taskcat.buildspec.yml
+      TimeoutInMinutes: 60
+
+  PackageSamBuild:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Description: Package sam file
+      ServiceRole: !GetAtt CodeBuildRole.Arn
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: "aws/codebuild/standard:5.0"
+        EnvironmentVariables:
+          - Name: BUCKET_NAME
+            Value: !Ref LintBucket
+          - Name: SAM_TEMPLATE_FILE
+            Value: !Ref AppSAMTemplateFile
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: pipeline/buildspecs/package.buildspec.yml
       TimeoutInMinutes: 60
 
   SAMBuildDeploy:
@@ -229,7 +250,21 @@ Resources:
               Configuration:
                 RepositoryName: !Ref InfraRepo
                 BranchName: !Ref InfraRepoBranch
-              RunOrder: 1
+
+        - Name: Packaging
+          Actions:
+            - InputArtifacts:
+                - Name: SourceArtifacts
+              OutputArtifacts:
+                - Name: PackagingArtifacts
+              Name: LintSam
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: "1"
+                Provider: CodeBuild
+              Configuration:
+                ProjectName: !Ref PackageSamBuild
 
         - Name: LintingTesting
           Actions:

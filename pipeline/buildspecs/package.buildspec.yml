@@ -1,0 +1,16 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      python: 3.7
+    commands:
+      - echo install phase started on `date`
+  build:
+    commands:
+      - echo Build phase started on `date`
+      - mkdir output
+      - sam package --s3-bucket ${BUCKET_NAME} --template-file ${SAM_TEMPLATE_FILE} > output/app.package.yml
+
+artifacts:
+  files:
+    - output/app.package.yml
