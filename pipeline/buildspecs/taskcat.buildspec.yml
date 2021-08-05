@@ -12,6 +12,7 @@ phases:
     commands:
       - echo Build phase started on `date`
       - cp  $CODEBUILD_SRC_DIR_PackagingArtifacts/${SAM_TEMPLATE_FILE} app.package.yml
+      - cat app.package.yml
       - taskcat test run -i pipeline/.taskcat.yml
   post_build:
     commands:
