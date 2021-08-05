@@ -340,15 +340,15 @@ Resources:
                 - Name: taskcatArtifacts
                 - Name: NagArtifacts
                 - Name: LintingArtifacts
-              Name: uploadTestingResult
-              ActionTypeId:
-                Category: Build
-                Owner: AWS
-                Version: "1"
-                Provider: Codebuild
-              Configuration:
-                PrimarySource: SourceArtifacts
-                ProjectName: !Ref LintDeployBuild
+            Name: Upload
+            ActionTypeId:
+              Category: Build
+              Owner: AWS
+              Version: "1"
+              Provider: Codebuild
+            Configuration:
+              PrimarySource: SourceArtifacts
+              ProjectName: !Ref LintDeployBuild
 
               # starting actual build
         - Name: Build
