@@ -246,8 +246,6 @@ Resources:
         BuildSpec: pipeline/buildspecs/upload.buildspec.yml
       TimeoutInMinutes: 10
 
-  # pipeline
-  # TODO build docker image for building and use it
   Pipeline:
     Type: AWS::CodePipeline::Pipeline
     Properties:
@@ -427,5 +425,5 @@ Outputs:
     Value: !Sub https://console.aws.amazon.com/codepipeline/home?region=${AWS::Region}#/view/${Pipeline}
     Description: CodePipeline URL
   TaskCatDashboardUrl:
-    Value: !Sub http://${CodeBucket}.s3-website-us-west-1.amazonaws.com
+    Value: !Sub http://${LintingBucket}.s3-website-us-west-1.amazonaws.com
     Description: URL for TaskCat Dashboard (Available after the CodePipeline completes)
