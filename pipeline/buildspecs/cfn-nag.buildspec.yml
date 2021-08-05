@@ -7,9 +7,10 @@ phases:
   build:
     commands:
       - echo Linting started on `date`
+      - mkdir output
       # - TODO save warnings in s3 bucket
-      - cfn_nag_scan --input-path ${SAM_TEMPLATE_FILE} > nag.txt
-      - cat nag.txt
+      - cfn_nag_scan --input-path ${SAM_TEMPLATE_FILE} > output/nag.txt
+      - cat output/nag.txt
   post_build:
     commands:
       - echo Linting completed on `date`
@@ -17,4 +18,4 @@ phases:
 
 artifacts:
   files:
-    - "**/*"
+    - "output/*"
