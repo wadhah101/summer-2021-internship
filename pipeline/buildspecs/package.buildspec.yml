@@ -9,8 +9,8 @@ phases:
     commands:
       - echo Build phase started on `date`
       - mkdir output
-      - sam package --s3-bucket ${BUCKET_NAME} --template-file ${SAM_TEMPLATE_FILE} > output/app.package.yml
+      - sam package --s3-bucket ${BUCKET_NAME} --template-file ${SAM_TEMPLATE_FILE} > output/${SAM_TEMPLATE_FILE}
 
 artifacts:
   files:
-    - output/app.package.yml
+    - output/${SAM_TEMPLATE_FILE}

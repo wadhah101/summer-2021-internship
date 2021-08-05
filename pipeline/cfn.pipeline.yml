@@ -257,7 +257,7 @@ Resources:
                 - Name: SourceArtifacts
               OutputArtifacts:
                 - Name: PackagingArtifacts
-              Name: LintSam
+              Name: PackageSam
               ActionTypeId:
                 Category: Build
                 Owner: AWS
@@ -269,7 +269,7 @@ Resources:
         - Name: LintingTesting
           Actions:
             - InputArtifacts:
-                - Name: SourceArtifacts
+                - Name: PackagingArtifacts
               OutputArtifacts:
                 - Name: LintingArtifacts
               Name: LintSam
@@ -283,7 +283,7 @@ Resources:
               RunOrder: 1
 
             - InputArtifacts:
-                - Name: SourceArtifacts
+                - Name: PackagingArtifacts
               OutputArtifacts:
                 - Name: NagArtifacts
               Name: NagSam
@@ -297,7 +297,7 @@ Resources:
               RunOrder: 1
 
             - InputArtifacts:
-                - Name: SourceArtifacts
+                - Name: PackagingArtifacts
               Name: Taskcat
               ActionTypeId:
                 Category: Build
@@ -312,7 +312,7 @@ Resources:
         - Name: Build
           Actions:
             - InputArtifacts:
-                - Name: SourceArtifacts
+                - Name: PackagingArtifacts
               Name: buildAnddeploySAM
               ActionTypeId:
                 Category: Build
