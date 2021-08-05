@@ -7,13 +7,12 @@ phases:
   build:
     commands:
       - echo Linting started on `date`
-      - mkdir output
-      - cfn-lint ${SAM_TEMPLATE_FILE} > output/lint.txt
-      - cat output/lint.txt
+      - cfn-lint ${SAM_TEMPLATE_FILE} > lint.txt
+      - cat lint.txt
   post_build:
     commands:
       - echo Linting completed on `date`
 
 artifacts:
   files:
-    - "output/*"
+    - "lint.txt"

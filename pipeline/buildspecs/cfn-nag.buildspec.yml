@@ -7,13 +7,12 @@ phases:
   build:
     commands:
       - echo Linting started on `date`
-      - mkdir output
-      - cfn_nag_scan --input-path ${SAM_TEMPLATE_FILE} > output/nag.txt
-      - cat output/nag.txt
+      - cfn_nag_scan --input-path ${SAM_TEMPLATE_FILE} > nag.txt
+      - cat nag.txt
   post_build:
     commands:
       - echo Linting completed on `date`
 
 artifacts:
   files:
-    - "output/*"
+    - "nag.txt"
