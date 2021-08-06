@@ -470,7 +470,7 @@ Resources:
     Properties:
       Description: A Lambda function that logs the payload of messages sent to an associated SNS topic.
       Runtime: nodejs14.x
-      Handler: dist/lambdas/mail/approve-mail.handler
+      Handler: dist/mail/approve-mail.handler
       Events:
         SNSTopicEvent:
           Type: SNS
