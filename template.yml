@@ -70,7 +70,9 @@ Resources:
             Statement:
               - Action:
                   - codecommit:*
-                Resource: !Ref InfraRepoArn
+                Resource:
+                  - !Ref InfraRepoArn
+                  - !Ref SelfRepoArn
                 Effect: Allow
               - Action:
                   - logs:*
