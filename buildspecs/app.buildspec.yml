@@ -5,8 +5,8 @@ phases:
       python: 3.8
   build:
     commands:
-      - sam validate --template-file ${SAM_TEMPLATE_FILE}
-      - sam build --template-file ${SAM_TEMPLATE_FILE}
+      - sam validate --template-file ${CODEBUILD_SRC_DIR_ProjectSourceCode}/${SAM_TEMPLATE_FILE}
+      - sam build --template-file ${CODEBUILD_SRC_DIR_ProjectSourceCode}/${SAM_TEMPLATE_FILE}
   post_build:
     commands:
-      - sam deploy --s3-bucket ${BUCKET_NAME} --template-file ${SAM_TEMPLATE_FILE} --no-fail-on-empty-changeset
+      - sam deploy --s3-bucket ${BUCKET_NAME} --template-file ${CODEBUILD_SRC_DIR_ProjectSourceCode}/${SAM_TEMPLATE_FILE} --no-fail-on-empty-changeset

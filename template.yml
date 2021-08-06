@@ -9,13 +9,21 @@ Parameters:
     Description: location of the sam file to test and deploy
     Default: app.template.yml
 
-  InfraRepoArn:
+  SelfRepoArn:
     Type: String
     Default: arn:aws:codecommit:us-west-1:477886346812:cfn-test-lint-pipeline
 
-  InfraRepo:
+  SelfRepo:
     Type: String
     Default: cfn-test-lint-pipeline
+
+  InfraRepoArn:
+    Type: String
+    Default: arn:aws:codecommit:us-west-1:477886346812:intership-sam-template-demo
+
+  InfraRepo:
+    Type: String
+    Default: intership-sam-template-demo
 
   InfraRepoBranch:
     Type: String
@@ -256,26 +264,41 @@ Resources:
     Properties:
       RoleArn: !GetAtt CodePipelineRole.Arn
       Stages:
-        # checking source code
-        - Name: Source
+        - Name: CodeSourcing
           Actions:
             - InputArtifacts: []
-              Name: Source
+              Name: ProjectSource
               ActionTypeId:
                 Category: Source
                 Owner: AWS
                 Version: "1"
                 Provider: CodeCommit
               OutputArtifacts:
-                - Name: SourceArtifacts
+                - Name: ProjectSourceCode
               Configuration:
                 RepositoryName: !Ref InfraRepo
                 BranchName: !Ref InfraRepoBranch
+              RunOrder: 1
+
+            - InputArtifacts: []
+              Name: PipelineSource
+              ActionTypeId:
+                Category: Source
+                Owner: AWS
+                Version: "1"
+                Provider: CodeCommit
+              OutputArtifacts:
+                - Name: PipelineSourceCode
+              Configuration:
+                RepositoryName: !Ref SelfRepo
+                BranchName: !Ref InfraRepoBranch
+              RunOrder: 2
 
         - Name: Packaging
           Actions:
             - InputArtifacts:
-                - Name: SourceArtifacts
+                - Name: PipelineSourceCode
+                - Name: ProjectSourceCode
               OutputArtifacts:
                 - Name: PackagingArtifacts
               Name: PackageSam
@@ -286,12 +309,13 @@ Resources:
                 Provider: CodeBuild
               Configuration:
                 ProjectName: !Ref PackageSamBuild
+                PrimarySource: PipelineSourceCode
 
         - Name: LintingTesting
           Actions:
             - InputArtifacts:
+                - Name: PipelineSourceCode
                 - Name: PackagingArtifacts
-                - Name: SourceArtifacts
               OutputArtifacts:
                 - Name: LintingArtifacts
               Name: LintSam
@@ -302,12 +326,12 @@ Resources:
                 Provider: CodeBuild
               Configuration:
                 ProjectName: !Ref CFNLintBuild
-                PrimarySource: SourceArtifacts
+                PrimarySource: PipelineSourceCode
               RunOrder: 1
 
             - InputArtifacts:
+                - Name: PipelineSourceCode
                 - Name: PackagingArtifacts
-                - Name: SourceArtifacts
               OutputArtifacts:
                 - Name: NagArtifacts
               Name: NagSam
@@ -318,12 +342,12 @@ Resources:
                 Provider: CodeBuild
               Configuration:
                 ProjectName: !Ref CFNNAGBuild
-                PrimarySource: SourceArtifacts
+                PrimarySource: PipelineSourceCode
               RunOrder: 1
 
             - InputArtifacts:
+                - Name: PipelineSourceCode
                 - Name: PackagingArtifacts
-                - Name: SourceArtifacts
               OutputArtifacts:
                 - Name: taskcatArtifacts
               Name: Taskcat
@@ -334,14 +358,14 @@ Resources:
                 Provider: CodeBuild
               Configuration:
                 ProjectName: !Ref TaskCatBuild
-                PrimarySource: SourceArtifacts
+                PrimarySource: PipelineSourceCode
 
               RunOrder: 1
 
         - Name: Upload
           Actions:
             - InputArtifacts:
-                - Name: SourceArtifacts
+                - Name: PipelineSourceCode
                 - Name: taskcatArtifacts
                 - Name: NagArtifacts
                 - Name: LintingArtifacts
@@ -352,15 +376,16 @@ Resources:
                 Version: "1"
                 Provider: CodeBuild
               Configuration:
-                PrimarySource: SourceArtifacts
                 ProjectName: !Ref LintDeployBuild
+                PrimarySource: PipelineSourceCode
 
               # starting actual build
         - Name: Build
           Actions:
             - InputArtifacts:
                 - Name: PackagingArtifacts
-                - Name: SourceArtifacts
+                - Name: ProjectSourceCode
+                - Name: PipelineSourceCode
               Name: buildAnddeploySAM
               ActionTypeId:
                 Category: Build
@@ -371,7 +396,7 @@ Resources:
                 - Name: SAMArtifacts
               Configuration:
                 ProjectName: !Ref SAMBuildDeploy
-                PrimarySource: SourceArtifacts
+                PrimarySource: PipelineSourceCode
 
       ArtifactStore:
         Type: S3

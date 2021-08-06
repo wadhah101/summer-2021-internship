@@ -9,7 +9,7 @@ phases:
     commands:
       - echo Build phase started on `date`
       - mkdir output
-      - sam package --s3-bucket ${BUCKET_NAME} --template-file ${SAM_TEMPLATE_FILE} > output/${SAM_TEMPLATE_FILE}
+      - sam package --s3-bucket ${BUCKET_NAME} --template-file ${CODEBUILD_SRC_DIR_ProjectSourceCode}/${SAM_TEMPLATE_FILE} > output/${SAM_TEMPLATE_FILE}
 
 artifacts:
   discard-paths: yes
