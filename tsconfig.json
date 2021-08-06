@@ -1,0 +1,18 @@
+{
+  "extends": "@tsconfig/node14/tsconfig.json",
+  "compilerOptions": {
+    "sourceMap": true,
+    "allowJs": true,
+    "target": "ES2021",
+    "module": "CommonJS",
+    "checkJs": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "outDir": "./dist",
+    "rootDir": "./lambdas"
+  },
+  "include": [
+    "lambdas/**/*.ts",
+    "lambdas/**/*.js"
+  ]
+}

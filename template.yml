@@ -31,7 +31,15 @@ Parameters:
 
 Globals:
   Function:
-    Timeout: 3
+    Layers:
+      - !Ref RuntimeDependenciesLayer
+    # Environment:
+    #   Variables:
+    #     TABLE_NAME: !Ref TableName
+    #     BUCKET_NAME: !Ref BucketName
+    Runtime: nodejs14.x
+    MemorySize: 128
+    Timeout: 100
 
 Resources:
   # storage
@@ -429,8 +437,36 @@ Resources:
         - Arn: !Ref MySNSTopic
           Id: "OpsTopic"
 
+  EventTopicPolicy:
+    Type: "AWS::SNS::TopicPolicy"
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: events.amazonaws.com
+            Action: "sns:Publish"
+            Resource: "*"
+      Topics:
+        - !Ref MySNSTopic
+
+  ########## Serverless Stuff
+  RuntimeDependenciesLayer:
+    Type: AWS::Serverless::LayerVersion
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      LayerName: "ts-dependencies"
+      ContentUri: ./
+      CompatibleRuntimes:
+        - nodejs14.x
+      RetentionPolicy: Retain
+
+  ## lamdas
   SNSPayloadLogger:
     Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
     Properties:
       Description: A Lambda function that logs the payload of messages sent to an associated SNS topic.
       Runtime: nodejs14.x
@@ -444,19 +480,6 @@ Resources:
       Timeout: 100
       Policies:
         - AWSLambdaBasicExecutionRole
-
-  EventTopicPolicy:
-    Type: "AWS::SNS::TopicPolicy"
-    Properties:
-      PolicyDocument:
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service: events.amazonaws.com
-            Action: "sns:Publish"
-            Resource: "*"
-      Topics:
-        - !Ref MySNSTopic
 
 Outputs:
   PipelineUrl:
