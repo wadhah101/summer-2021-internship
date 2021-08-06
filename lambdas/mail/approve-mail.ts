@@ -8,12 +8,8 @@ import {
 export const handler = async (
   event: APIGatewayProxyEvent,
   context: Context
-): Promise<APIGatewayProxyResult> => {
+): Promise<void> => {
   const result = { event, context };
-  return {
-    statusCode: 200,
-    body: JSON.stringify({
-      result,
-    }),
-  };
+  console.log(result);
+  return;
 };

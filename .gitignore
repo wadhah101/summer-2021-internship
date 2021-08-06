@@ -4,6 +4,8 @@
 ### Linux ###
 *~
 
+node_modules
+dist
 .aws-sam
 
 taskcat_outputs

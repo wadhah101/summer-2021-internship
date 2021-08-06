@@ -280,7 +280,6 @@ Resources:
               Configuration:
                 RepositoryName: !Ref InfraRepo
                 BranchName: !Ref InfraRepoBranch
-              RunOrder: 1
 
             - InputArtifacts: []
               Name: PipelineSource
@@ -294,7 +293,6 @@ Resources:
               Configuration:
                 RepositoryName: !Ref SelfRepo
                 BranchName: !Ref InfraRepoBranch
-              RunOrder: 2
 
         - Name: Packaging
           Actions:
@@ -410,7 +408,7 @@ Resources:
     Properties:
       TopicName: "cfntopic"
 
-  EmailResultRule:
+  CodePipelineFinishRule:
     Type: "AWS::Events::Rule"
     Properties:
       EventPattern:
@@ -431,6 +429,22 @@ Resources:
         - Arn: !Ref MySNSTopic
           Id: "OpsTopic"
 
+  SNSPayloadLogger:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: A Lambda function that logs the payload of messages sent to an associated SNS topic.
+      Runtime: nodejs14.x
+      Handler: dist/lambdas/mail/approve-mail.handler
+      Events:
+        SNSTopicEvent:
+          Type: SNS
+          Properties:
+            Topic: !Ref MySNSTopic
+      MemorySize: 128
+      Timeout: 100
+      Policies:
+        - AWSLambdaBasicExecutionRole
+
   EventTopicPolicy:
     Type: "AWS::SNS::TopicPolicy"
     Properties:
@@ -443,21 +457,6 @@ Resources:
             Resource: "*"
       Topics:
         - !Ref MySNSTopic
-      # Targets:
-      #   - Arn: "arn:aws:sqs:us-west-2:081035103721:demoSQS"
-      #     Id: Id1234
-      #     RetryPolicy:
-      #       MaximumRetryAttempts: 4
-      #       MaximumEventAgeInSeconds: 400
-      #     DeadLetterConfig:
-      #       Arn: "arn:aws:sqs:us-west-2:081035103721:demoDLQ"
-
-  MySubscription:
-    Type: AWS::SNS::Subscription
-    Properties:
-      Endpoint: wadhah.mahroug15@gmail.com
-      Protocol: email
-      TopicArn: !Ref "MySNSTopic"
 
 Outputs:
   PipelineUrl:
