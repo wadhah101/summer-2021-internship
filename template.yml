@@ -280,6 +280,7 @@ Resources:
               Configuration:
                 RepositoryName: !Ref InfraRepo
                 BranchName: !Ref InfraRepoBranch
+              RunOrder: 1
 
             - InputArtifacts: []
               Name: PipelineSource
@@ -293,6 +294,7 @@ Resources:
               Configuration:
                 RepositoryName: !Ref SelfRepo
                 BranchName: !Ref InfraRepoBranch
+              RunOrder: 2
 
         - Name: Packaging
           Actions:
