@@ -462,7 +462,7 @@ Resources:
         - nodejs14.x
       RetentionPolicy: Retain
 
-  ## lamdas
+  ## lambdas
   SNSPayloadLogger:
     Type: AWS::Serverless::Function
     Metadata:
