@@ -1,0 +1,118 @@
+---
+AWSTemplateFormatVersion: "2010-09-09"
+Description: CodePipeline with CodeBuild workflow to run TaskCat ,  cfn-lint , cfn-nag
+Transform: AWS::Serverless-2016-10-31
+Parameters:
+  # build related params
+  AppSAMTemplateFile:
+    Type: String
+    Description: location of the sam file to test and deploy
+    Default: app.template.yml
+
+  SelfRepoArn:
+    Type: String
+    Default: arn:aws:codecommit:us-west-1:477886346812:cfn-test-lint-pipeline
+
+  SelfRepo:
+    Type: String
+    Default: cfn-test-lint-pipeline
+
+  InfraRepoArn:
+    Type: String
+    Default: arn:aws:codecommit:us-west-1:477886346812:intership-sam-template-demo
+
+  InfraRepo:
+    Type: String
+    Default: intership-sam-template-demo
+
+  InfraRepoBranch:
+    Type: String
+    Default: master
+
+Globals:
+  Function:
+    Layers:
+      - !Ref RuntimeDependenciesLayer
+    Runtime: nodejs14.x
+    MemorySize: 128
+    Timeout: 100
+
+Resources:
+  # messaging
+  MySNSTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: "cfntopic"
+
+  CodePipelineFinishRule:
+    Type: "AWS::Events::Rule"
+    Properties:
+      EventPattern:
+        source:
+          - aws.codepipeline
+        detail-type:
+          - CodePipeline Pipeline Execution State Change
+        detail:
+          state:
+            - SUCCEEDED
+            - FAILED
+        resources:
+          - !Ref Pipeline
+
+      State: ENABLED
+
+      Targets:
+        - Arn: !Ref MySNSTopic
+          Id: "OpsTopic"
+
+  EventTopicPolicy:
+    Type: "AWS::SNS::TopicPolicy"
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: events.amazonaws.com
+            Action: "sns:Publish"
+            Resource: "*"
+      Topics:
+        - !Ref MySNSTopic
+
+  ########## Serverless Stuff
+  RuntimeDependenciesLayer:
+    Type: AWS::Serverless::LayerVersion
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      LayerName: "ts-dependencies"
+      ContentUri: ./
+      CompatibleRuntimes:
+        - nodejs14.x
+      RetentionPolicy: Retain
+
+  ## lambdas
+  SNSPayloadLogger:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Description: A Lambda function that logs the payload of messages sent to an associated SNS topic.
+      Runtime: nodejs14.x
+      Handler: dist/mail/approve-mail.handler
+      Events:
+        SNSTopicEvent:
+          Type: SNS
+          Properties:
+            Topic: !Ref MySNSTopic
+      MemorySize: 128
+      Timeout: 100
+      Policies:
+        - AWSLambdaBasicExecutionRole
+
+Outputs:
+  PipelineUrl:
+    Value: !Sub https://console.aws.amazon.com/codepipeline/home?region=${AWS::Region}#/view/${Pipeline}
+    Description: CodePipeline URL
+  TaskCatDashboardUrl:
+    Value: !Sub http://${LintingBucket}.s3-website-us-west-1.amazonaws.com
+    Description: URL for TaskCat Dashboard (Available after the CodePipeline completes)

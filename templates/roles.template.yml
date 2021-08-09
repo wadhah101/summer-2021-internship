@@ -1,0 +1,128 @@
+---
+AWSTemplateFormatVersion: "2010-09-09"
+Description: CodePipeline with CodeBuild workflow to run TaskCat ,  cfn-lint , cfn-nag
+Transform: AWS::Serverless-2016-10-31
+Parameters:
+  # build related params
+  AppSAMTemplateFile:
+    Type: String
+    Description: location of the sam file to test and deploy
+    Default: app.template.yml
+
+  SelfRepoArn:
+    Type: String
+    Default: arn:aws:codecommit:us-west-1:477886346812:cfn-test-lint-pipeline
+
+  SelfRepo:
+    Type: String
+    Default: cfn-test-lint-pipeline
+
+  InfraRepoArn:
+    Type: String
+    Default: arn:aws:codecommit:us-west-1:477886346812:intership-sam-template-demo
+
+  InfraRepo:
+    Type: String
+    Default: intership-sam-template-demo
+
+  InfraRepoBranch:
+    Type: String
+    Default: master
+
+Resources:
+  # roles
+  CodePipelineRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - codepipeline.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: "/"
+      Policies:
+        - PolicyName: codepipeline-service
+          PolicyDocument:
+            Statement:
+              - Action:
+                  - codecommit:*
+                Resource:
+                  - !Ref InfraRepoArn
+                  - !Ref SelfRepoArn
+                Effect: Allow
+              - Action:
+                  - logs:*
+                  - lambda:*
+                  - cloudwatch:*
+                  - codebuild:*
+                  - s3:*
+                Resource: "*"
+                Effect: Allow
+              - Action:
+                  - s3:PutObject
+                Resource:
+                  - arn:aws:s3:::codepipeline*
+                Effect: Allow
+              - Action:
+                  - logs:*
+                  - lambda:*
+                  - cloudwatch:*
+                  - codebuild:*
+                  - s3:*
+                  - ec2:*
+                  - iam:PassRole
+                Resource: "*"
+                Effect: Allow
+            Version: "2012-10-17"
+
+  # specify roles
+  CodeBuildRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - codebuild.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: "/"
+      Policies:
+        - PolicyName: codebuild-service
+          PolicyDocument:
+            Statement:
+              - Action:
+                  - apigateway:*
+                  - cloudformation:*
+                  - cloudwatch:*
+                  - cloudtrail:*
+                  - codebuild:*
+                  - codecommit:*
+                  - codepipeline:*
+                  - config:*
+                  - dynamodb:*
+                  - ec2:*
+                  - iam:*
+                  - kms:*
+                  - lambda:*
+                  - logs:*
+                  - redshift:*
+                  - rds:*
+                  - secretsmanager:*
+                  - s3:*
+                  - sns:*
+                  - sqs:*
+                Effect: Allow
+                Resource: "*"
+            Version: "2012-10-17"
+
+Outputs:
+  CodePipelineRoleID:
+    Value: !Ref CodePipelineRole
+    Description: "Exporting values"
+    Export:
+      Name: !Sub "${AWS::StackName}-CodePipelineRoleID"
