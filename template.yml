@@ -367,34 +367,56 @@ Resources:
               Configuration:
                 ProjectName: !Ref TaskCatBuild
                 PrimarySource: PipelineSourceCode
-
               RunOrder: 1
 
-        - Name: Upload
+        - Name: UploadLintingResult
           Actions:
             - InputArtifacts:
-                - Name: PipelineSourceCode
                 - Name: taskcatArtifacts
-                - Name: NagArtifacts
-                - Name: LintingArtifacts
-              Name: UploadRes
+              Name: TaskCatUpload
               ActionTypeId:
-                Category: Build
+                Category: Deploy
                 Owner: AWS
                 Version: "1"
-                Provider: CodeBuild
+                Provider: S3
               Configuration:
-                ProjectName: !Ref LintDeployBuild
-                PrimarySource: PipelineSourceCode
+                BucketName: !Ref LintDeployBuild
+                Extract: true
+              RunOrder: 1
 
-              # starting actual build
-        - Name: Build
+            - InputArtifacts:
+                - Name: LintingArtifacts
+              Name: CFNLintUpload
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Version: "1"
+                Provider: S3
+              Configuration:
+                BucketName: !Ref LintDeployBuild
+                Extract: true
+              RunOrder: 1
+
+            - InputArtifacts:
+                - Name: NagArtifacts
+              Name: CFNNagUploads
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Version: "1"
+                Provider: S3
+              Configuration:
+                BucketName: !Ref LintDeployBuild
+                Extract: true
+              RunOrder: 1
+
+        - Name: Deploy
           Actions:
             - InputArtifacts:
                 - Name: PackagingArtifacts
                 - Name: ProjectSourceCode
                 - Name: PipelineSourceCode
-              Name: buildAnddeploySAM
+              Name: BuildDeploySAM
               ActionTypeId:
                 Category: Build
                 Owner: AWS
@@ -405,6 +427,7 @@ Resources:
               Configuration:
                 ProjectName: !Ref SAMBuildDeploy
                 PrimarySource: PipelineSourceCode
+              RunOrder: 2
 
       ArtifactStore:
         Type: S3
