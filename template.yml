@@ -380,7 +380,7 @@ Resources:
                 Version: "1"
                 Provider: S3
               Configuration:
-                BucketName: !Ref LintDeployBuild
+                BucketName: !Ref LintingBucket
                 Extract: true
               RunOrder: 1
 
@@ -393,7 +393,7 @@ Resources:
                 Version: "1"
                 Provider: S3
               Configuration:
-                BucketName: !Ref LintDeployBuild
+                BucketName: !Ref LintingBucket
                 Extract: true
               RunOrder: 1
 
@@ -406,7 +406,7 @@ Resources:
                 Version: "1"
                 Provider: S3
               Configuration:
-                BucketName: !Ref LintDeployBuild
+                BucketName: !Ref LintingBucket
                 Extract: true
               RunOrder: 1
 
@@ -416,7 +416,7 @@ Resources:
                 - Name: PackagingArtifacts
                 - Name: ProjectSourceCode
                 - Name: PipelineSourceCode
-              Name: BuildDeploySAM
+              Name: DeploySAM
               ActionTypeId:
                 Category: Build
                 Owner: AWS
