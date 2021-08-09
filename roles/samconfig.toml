@@ -1,0 +1,9 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "samroles-eh"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-1bc9iel2dapz1"
+s3_prefix = "samroles-eh"
+region = "us-west-1"
+capabilities = "CAPABILITY_IAM"

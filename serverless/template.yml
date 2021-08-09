@@ -1,0 +1,48 @@
+---
+AWSTemplateFormatVersion: "2010-09-09"
+Description: CodePipeline with CodeBuild workflow to run TaskCat ,  cfn-lint , cfn-nag
+Transform: AWS::Serverless-2016-10-31
+
+Parameters:
+  MessagingStackName:
+    Type: String
+    Description: location of the sam file to test and deploy
+    Default: cfn-lint-pipeline-messaging
+
+Globals:
+  Function:
+    Layers:
+      - !Ref RuntimeDependenciesLayer
+    Runtime: nodejs14.x
+    MemorySize: 128
+    Timeout: 100
+
+Resources:
+  ########## Serverless Stuff
+  RuntimeDependenciesLayer:
+    Type: AWS::Serverless::LayerVersion
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      LayerName: "ts-dependencies"
+      ContentUri: ./
+      CompatibleRuntimes:
+        - nodejs14.x
+      RetentionPolicy: Retain
+
+  ## lambdas
+  SNSPayloadLogger:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Runtime: nodejs14.x
+      Handler: dist/mail/approve-mail.handler
+      Events:
+        SNSTopicEvent:
+          Type: SNS
+          Properties:
+            Topic:
+              Fn::ImportValue: !Sub ${MessagingStackName}-SNSTopicID
+      Policies:
+        - AWSLambdaBasicExecutionRole

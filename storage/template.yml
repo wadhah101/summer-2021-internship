@@ -1,0 +1,38 @@
+---
+AWSTemplateFormatVersion: "2010-09-09"
+Description: CodePipeline with CodeBuild workflow to run TaskCat ,  cfn-lint , cfn-nag
+Transform: AWS::Serverless-2016-10-31
+
+Resources:
+  CodeBucket:
+    Type: AWS::S3::Bucket
+
+  LintingBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      AccessControl: PublicRead
+      WebsiteConfiguration:
+        IndexDocument: index.html
+
+  PipelineArtifactBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Delete
+
+Outputs:
+  CodeBucketID:
+    Value: !Ref CodeBucket
+    Description: "CodeBucket"
+    Export:
+      Name: !Sub "${AWS::StackName}-CodeBucketID"
+
+  LintingBucketID:
+    Value: !Ref LintingBucket
+    Description: "LintingBucket"
+    Export:
+      Name: !Sub "${AWS::StackName}-LintingBucketID"
+
+  PipelineArtifactBucketID:
+    Value: !Ref PipelineArtifactBucket
+    Description: "PipelineArtifactBucket"
+    Export:
+      Name: !Sub "${AWS::StackName}-PipelineArtifactBucketID"

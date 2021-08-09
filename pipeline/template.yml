@@ -29,18 +29,6 @@ Parameters:
     Type: String
     Default: master
 
-Globals:
-  Function:
-    Layers:
-      - !Ref RuntimeDependenciesLayer
-    # Environment:
-    #   Variables:
-    #     TABLE_NAME: !Ref TableName
-    #     BUCKET_NAME: !Ref BucketName
-    Runtime: nodejs14.x
-    MemorySize: 128
-    Timeout: 100
-
 Resources:
   # storage
   CodeBucket:
@@ -165,7 +153,7 @@ Resources:
             Value: !Ref AppSAMTemplateFile
       Source:
         Type: CODEPIPELINE
-        BuildSpec: buildspecs/cfn-lint.buildspec.yml
+        BuildSpec: pipeline/buildspecs/cfn-lint.buildspec.yml
       TimeoutInMinutes: 10
 
   CFNNAGBuild:
@@ -184,7 +172,7 @@ Resources:
             Value: !Ref AppSAMTemplateFile
       Source:
         Type: CODEPIPELINE
-        BuildSpec: buildspecs/cfn-nag.buildspec.yml
+        BuildSpec: pipeline/buildspecs/cfn-nag.buildspec.yml
       TimeoutInMinutes: 10
 
   TaskCatBuild:
@@ -204,7 +192,7 @@ Resources:
             Value: !Ref AppSAMTemplateFile
       Source:
         Type: CODEPIPELINE
-        BuildSpec: buildspecs/taskcat.buildspec.yml
+        BuildSpec: pipeline/buildspecs/taskcat.buildspec.yml
       TimeoutInMinutes: 60
 
   PackageSamBuild:
@@ -225,7 +213,7 @@ Resources:
             Value: !Ref AppSAMTemplateFile
       Source:
         Type: CODEPIPELINE
-        BuildSpec: buildspecs/package.buildspec.yml
+        BuildSpec: pipeline/buildspecs/package.buildspec.yml
       TimeoutInMinutes: 60
 
   SAMBuildDeploy:
@@ -246,7 +234,7 @@ Resources:
             Value: !Ref AppSAMTemplateFile
       Source:
         Type: CODEPIPELINE
-        BuildSpec: buildspecs/app.buildspec.yml
+        BuildSpec: pipeline/buildspecs/app.buildspec.yml
       TimeoutInMinutes: 10
 
   LintDeployBuild:
@@ -266,7 +254,7 @@ Resources:
 
       Source:
         Type: CODEPIPELINE
-        BuildSpec: buildspecs/upload.buildspec.yml
+        BuildSpec: pipeline/buildspecs/upload.buildspec.yml
       TimeoutInMinutes: 10
 
   Pipeline:
@@ -432,77 +420,6 @@ Resources:
       ArtifactStore:
         Type: S3
         Location: !Ref PipelineBucket
-
-  # messaging
-  MySNSTopic:
-    Type: AWS::SNS::Topic
-    Properties:
-      TopicName: "cfntopic"
-
-  CodePipelineFinishRule:
-    Type: "AWS::Events::Rule"
-    Properties:
-      EventPattern:
-        source:
-          - aws.codepipeline
-        detail-type:
-          - CodePipeline Pipeline Execution State Change
-        detail:
-          state:
-            - SUCCEEDED
-            - FAILED
-        resources:
-          - !Ref Pipeline
-
-      State: ENABLED
-
-      Targets:
-        - Arn: !Ref MySNSTopic
-          Id: "OpsTopic"
-
-  EventTopicPolicy:
-    Type: "AWS::SNS::TopicPolicy"
-    Properties:
-      PolicyDocument:
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service: events.amazonaws.com
-            Action: "sns:Publish"
-            Resource: "*"
-      Topics:
-        - !Ref MySNSTopic
-
-  ########## Serverless Stuff
-  RuntimeDependenciesLayer:
-    Type: AWS::Serverless::LayerVersion
-    Metadata:
-      BuildMethod: makefile
-    Properties:
-      LayerName: "ts-dependencies"
-      ContentUri: ./
-      CompatibleRuntimes:
-        - nodejs14.x
-      RetentionPolicy: Retain
-
-  ## lambdas
-  SNSPayloadLogger:
-    Type: AWS::Serverless::Function
-    Metadata:
-      BuildMethod: makefile
-    Properties:
-      Description: A Lambda function that logs the payload of messages sent to an associated SNS topic.
-      Runtime: nodejs14.x
-      Handler: dist/mail/approve-mail.handler
-      Events:
-        SNSTopicEvent:
-          Type: SNS
-          Properties:
-            Topic: !Ref MySNSTopic
-      MemorySize: 128
-      Timeout: 100
-      Policies:
-        - AWSLambdaBasicExecutionRole
 
 Outputs:
   PipelineUrl:

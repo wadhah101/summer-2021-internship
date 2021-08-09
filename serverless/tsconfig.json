@@ -12,10 +12,10 @@
     "esModuleInterop": true,
     "moduleResolution": "node",
     "outDir": "./dist",
-    "rootDir": "./lambdas"
+    "rootDir": "src"
   },
   "include": [
-    "lambdas/**/*.ts",
-    "lambdas/**/*.js"
+    "src/**/*.ts",
+    "src/**/*.js"
   ]
 }

@@ -3,7 +3,7 @@
 
 
 build-SNSPayloadLogger:
-	$(MAKE) HANDLER=lambdas/mail/approve-mail.ts build-lambda-common
+	$(MAKE) HANDLER=src/mail/approve-mail.ts build-lambda-common
 
 build-lambda-common:
 	npm install
