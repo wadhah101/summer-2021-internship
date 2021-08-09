@@ -3,33 +3,37 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: CodePipeline with CodeBuild workflow to run TaskCat ,  cfn-lint , cfn-nag
 Transform: AWS::Serverless-2016-10-31
 
+Parameters:
+  PipelineStackName:
+    Type: String
+    Default: cfn-lint-pipeline-main
+
 Resources:
-  # messaging
   MySNSTopic:
     Type: AWS::SNS::Topic
     Properties:
       TopicName: "cfntopic"
 
-  # CodePipelineFinishRule:
-  #   Type: "AWS::Events::Rule"
-  #   Properties:
-  #     EventPattern:
-  #       source:
-  #         - aws.codepipeline
-  #       detail-type:
-  #         - CodePipeline Pipeline Execution State Change
-  #       detail:
-  #         state:
-  #           - SUCCEEDED
-  #           - FAILED
-  #       resources:
-  #         - !Ref Pipeline
+  CodePipelineFinishRule:
+    Type: "AWS::Events::Rule"
+    Properties:
+      EventPattern:
+        source:
+          - aws.codepipeline
+        detail-type:
+          - CodePipeline Pipeline Execution State Change
+        detail:
+          state:
+            - SUCCEEDED
+            - FAILED
+        resources:
+          - Fn::ImportValue: !Sub "${PipelineStackName}-PipelineID"
 
-  #     State: ENABLED
+      State: ENABLED
 
-  #     Targets:
-  #       - Arn: !Ref MySNSTopic
-  #         Id: "OpsTopic"
+      Targets:
+        - Arn: !Ref MySNSTopic
+          Id: "OpsTopic"
 
   EventTopicPolicy:
     Type: "AWS::SNS::TopicPolicy"

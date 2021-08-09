@@ -326,4 +326,4 @@ Outputs:
   PipelineID:
     Value: !Ref Pipeline
     Export:
-      Name: !Sub "${AWS::StackName}-Pipeline"
+      Name: !Sub "${AWS::StackName}-PipelineID"
