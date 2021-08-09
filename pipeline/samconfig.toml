@@ -2,9 +2,10 @@ version = 0.1
 [default]
 [default.deploy]
 [default.deploy.parameters]
-stack_name = "cfn-lint-test-pipeline"
+stack_name = "cfn-lint-pipeline-main"
 s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-1bc9iel2dapz1"
-s3_prefix = "cfn-lint-test-pipeline"
+s3_prefix = "cfn-lint-pipeline-main"
 region = "us-west-1"
 capabilities = "CAPABILITY_IAM"
-parameter_overrides = "AppSAMTemplateFile=\"app.template.yml\" SelfRepoArn=\"arn:aws:codecommit:us-west-1:477886346812:cfn-test-lint-pipeline\" SelfRepo=\"cfn-test-lint-pipeline\" InfraRepoArn=\"arn:aws:codecommit:us-west-1:477886346812:intership-sam-template-demo\" InfraRepo=\"intership-sam-template-demo\" InfraRepoBranch=\"master\""
+parameter_overrides = "RoleStackName=\"cfn-lint-pipeline-roles\" StorageStackName=\"cfn-lint-pipeline-storage\" AppSAMTemplateFile=\"app.template.yml\" SelfRepo=\"cfn-test-lint-pipeline\" InfraRepo=\"intership-sam-template-demo\" InfraRepoBranch=\"master\""
+confirm_changeset = true

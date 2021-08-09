@@ -2,8 +2,10 @@ version = 0.1
 [default]
 [default.deploy]
 [default.deploy.parameters]
-stack_name = "samroles-eh"
+stack_name = "cfn-lint-pipeline-roles"
 s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-1bc9iel2dapz1"
-s3_prefix = "samroles-eh"
+s3_prefix = "cfn-lint-pipeline-roles"
 region = "us-west-1"
 capabilities = "CAPABILITY_IAM"
+confirm_changeset = true
+parameter_overrides = "SelfRepoArn=\"arn:aws:codecommit:us-west-1:477886346812:cfn-test-lint-pipeline\" InfraRepoArn=\"arn:aws:codecommit:us-west-1:477886346812:intership-sam-template-demo\""

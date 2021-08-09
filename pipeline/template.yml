@@ -4,22 +4,22 @@ Description: CodePipeline with CodeBuild workflow to run TaskCat ,  cfn-lint , c
 Transform: AWS::Serverless-2016-10-31
 Parameters:
   # build related params
+  RoleStackName:
+    Type: String
+    Default: cfn-lint-pipeline-roles
+
+  StorageStackName:
+    Type: String
+    Default: cfn-lint-pipeline-storage
+
   AppSAMTemplateFile:
     Type: String
     Description: location of the sam file to test and deploy
     Default: app.template.yml
 
-  SelfRepoArn:
-    Type: String
-    Default: arn:aws:codecommit:us-west-1:477886346812:cfn-test-lint-pipeline
-
   SelfRepo:
     Type: String
     Default: cfn-test-lint-pipeline
-
-  InfraRepoArn:
-    Type: String
-    Default: arn:aws:codecommit:us-west-1:477886346812:intership-sam-template-demo
 
   InfraRepo:
     Type: String
@@ -30,118 +30,15 @@ Parameters:
     Default: master
 
 Resources:
-  # storage
-  CodeBucket:
-    Type: AWS::S3::Bucket
-
-  LintingBucket:
-    Type: AWS::S3::Bucket
-    # DeletionPolicy: Retain
-    # UpdateReplacePolicy: Retain
-    Properties:
-      AccessControl: PublicRead
-      WebsiteConfiguration:
-        IndexDocument: index.html
-
-  PipelineBucket:
-    Type: AWS::S3::Bucket
-    DeletionPolicy: Delete
-
-  # roles
-  CodePipelineRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service:
-                - codepipeline.amazonaws.com
-            Action:
-              - sts:AssumeRole
-      Path: "/"
-      Policies:
-        - PolicyName: codepipeline-service
-          PolicyDocument:
-            Statement:
-              - Action:
-                  - codecommit:*
-                Resource:
-                  - !Ref InfraRepoArn
-                  - !Ref SelfRepoArn
-                Effect: Allow
-              - Action:
-                  - logs:*
-                  - lambda:*
-                  - cloudwatch:*
-                  - codebuild:*
-                  - s3:*
-                Resource: "*"
-                Effect: Allow
-              - Action:
-                  - s3:PutObject
-                Resource:
-                  - arn:aws:s3:::codepipeline*
-                Effect: Allow
-              - Action:
-                  - logs:*
-                  - lambda:*
-                  - cloudwatch:*
-                  - codebuild:*
-                  - s3:*
-                  - ec2:*
-                  - iam:PassRole
-                Resource: "*"
-                Effect: Allow
-            Version: "2012-10-17"
-
-  # specify roles
-  CodeBuildRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service:
-                - codebuild.amazonaws.com
-            Action:
-              - sts:AssumeRole
-      Path: "/"
-      Policies:
-        - PolicyName: codebuild-service
-          PolicyDocument:
-            Statement:
-              - Action:
-                  - apigateway:*
-                  - cloudformation:*
-                  - cloudwatch:*
-                  - cloudtrail:*
-                  - codebuild:*
-                  - codecommit:*
-                  - codepipeline:*
-                  - config:*
-                  - dynamodb:*
-                  - ec2:*
-                  - iam:*
-                  - kms:*
-                  - lambda:*
-                  - logs:*
-                  - redshift:*
-                  - rds:*
-                  - secretsmanager:*
-                  - s3:*
-                  - sns:*
-                  - sqs:*
-                Effect: Allow
-                Resource: "*"
-            Version: "2012-10-17"
-
   CFNLintBuild:
     Type: AWS::CodeBuild::Project
     Properties:
       Description: Run CFN-lint
-      ServiceRole: !GetAtt CodeBuildRole.Arn
+      # ServiceRole: !GetAtt CodeBuildRole.Arn
+
+      ServiceRole:
+        Fn::ImportValue: !Sub "${RoleStackName}-CodeBuildRoleArn"
+
       Artifacts:
         Type: CODEPIPELINE
       Environment:
@@ -160,7 +57,9 @@ Resources:
     Type: AWS::CodeBuild::Project
     Properties:
       Description: Run CFN-lint
-      ServiceRole: !GetAtt CodeBuildRole.Arn
+      ServiceRole:
+        Fn::ImportValue: !Sub "${RoleStackName}-CodeBuildRoleArn"
+
       Artifacts:
         Type: CODEPIPELINE
       Environment:
@@ -179,7 +78,9 @@ Resources:
     Type: AWS::CodeBuild::Project
     Properties:
       Description: Run TaskCat
-      ServiceRole: !GetAtt CodeBuildRole.Arn
+      ServiceRole:
+        Fn::ImportValue: !Sub "${RoleStackName}-CodeBuildRoleArn"
+
       Artifacts:
         Type: CODEPIPELINE
       Environment:
@@ -199,7 +100,9 @@ Resources:
     Type: AWS::CodeBuild::Project
     Properties:
       Description: Package sam file
-      ServiceRole: !GetAtt CodeBuildRole.Arn
+      ServiceRole:
+        Fn::ImportValue: !Sub "${RoleStackName}-CodeBuildRoleArn"
+
       Artifacts:
         Type: CODEPIPELINE
       Environment:
@@ -208,7 +111,9 @@ Resources:
         Image: "aws/codebuild/standard:5.0"
         EnvironmentVariables:
           - Name: BUCKET_NAME
-            Value: !Ref CodeBucket
+            Value:
+              Fn::ImportValue: !Sub "${StorageStackName}-CodeBucketID"
+
           - Name: SAM_TEMPLATE_FILE
             Value: !Ref AppSAMTemplateFile
       Source:
@@ -220,7 +125,9 @@ Resources:
     Type: AWS::CodeBuild::Project
     Properties:
       Description: Run sam
-      ServiceRole: !GetAtt CodeBuildRole.Arn
+      ServiceRole:
+        Fn::ImportValue: !Sub "${RoleStackName}-CodeBuildRoleArn"
+
       Artifacts:
         Type: CODEPIPELINE
       Environment:
@@ -229,7 +136,9 @@ Resources:
         Image: "aws/codebuild/standard:5.0"
         EnvironmentVariables:
           - Name: BUCKET_NAME
-            Value: !Ref CodeBucket
+            Value:
+              Fn::ImportValue: !Sub "${StorageStackName}-CodeBucketID"
+
           - Name: SAM_TEMPLATE_FILE
             Value: !Ref AppSAMTemplateFile
       Source:
@@ -237,30 +146,12 @@ Resources:
         BuildSpec: pipeline/buildspecs/app.buildspec.yml
       TimeoutInMinutes: 10
 
-  LintDeployBuild:
-    Type: AWS::CodeBuild::Project
-    Properties:
-      Description: upload testing result to s3
-      ServiceRole: !GetAtt CodeBuildRole.Arn
-      Artifacts:
-        Type: CODEPIPELINE
-      Environment:
-        Type: LINUX_CONTAINER
-        ComputeType: BUILD_GENERAL1_SMALL
-        Image: "aws/codebuild/standard:5.0"
-        EnvironmentVariables:
-          - Name: BUCKET_NAME
-            Value: !Ref LintingBucket
-
-      Source:
-        Type: CODEPIPELINE
-        BuildSpec: pipeline/buildspecs/upload.buildspec.yml
-      TimeoutInMinutes: 10
-
   Pipeline:
     Type: AWS::CodePipeline::Pipeline
     Properties:
-      RoleArn: !GetAtt CodePipelineRole.Arn
+      RoleArn:
+        Fn::ImportValue: !Sub "${RoleStackName}-CodePipelineRoleArn"
+
       Stages:
         - Name: CodeSourcing
           Actions:
@@ -368,7 +259,9 @@ Resources:
                 Version: "1"
                 Provider: S3
               Configuration:
-                BucketName: !Ref LintingBucket
+                BucketName:
+                  Fn::ImportValue: !Sub "${StorageStackName}-LintingBucketID"
+
                 Extract: true
               RunOrder: 1
 
@@ -381,7 +274,9 @@ Resources:
                 Version: "1"
                 Provider: S3
               Configuration:
-                BucketName: !Ref LintingBucket
+                BucketName:
+                  Fn::ImportValue: !Sub "${StorageStackName}-LintingBucketID"
+
                 Extract: true
               RunOrder: 1
 
@@ -394,7 +289,9 @@ Resources:
                 Version: "1"
                 Provider: S3
               Configuration:
-                BucketName: !Ref LintingBucket
+                BucketName:
+                  Fn::ImportValue: !Sub "${StorageStackName}-LintingBucketID"
+
                 Extract: true
               RunOrder: 1
 
@@ -419,12 +316,14 @@ Resources:
 
       ArtifactStore:
         Type: S3
-        Location: !Ref PipelineBucket
+        Location:
+          Fn::ImportValue: !Sub "${StorageStackName}-PipelineArtifactBucketID"
 
 Outputs:
   PipelineUrl:
     Value: !Sub https://console.aws.amazon.com/codepipeline/home?region=${AWS::Region}#/view/${Pipeline}
     Description: CodePipeline URL
-  TaskCatDashboardUrl:
-    Value: !Sub http://${LintingBucket}.s3-website-us-west-1.amazonaws.com
-    Description: URL for TaskCat Dashboard (Available after the CodePipeline completes)
+  PipelineID:
+    Value: !Ref Pipeline
+    Export:
+      Name: !Sub "${AWS::StackName}-Pipeline"

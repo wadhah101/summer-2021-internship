@@ -3,31 +3,13 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: CodePipeline with CodeBuild workflow to run TaskCat ,  cfn-lint , cfn-nag
 Transform: AWS::Serverless-2016-10-31
 Parameters:
-  # build related params
-  AppSAMTemplateFile:
-    Type: String
-    Description: location of the sam file to test and deploy
-    Default: app.template.yml
-
   SelfRepoArn:
     Type: String
     Default: arn:aws:codecommit:us-west-1:477886346812:cfn-test-lint-pipeline
 
-  SelfRepo:
-    Type: String
-    Default: cfn-test-lint-pipeline
-
   InfraRepoArn:
     Type: String
     Default: arn:aws:codecommit:us-west-1:477886346812:intership-sam-template-demo
-
-  InfraRepo:
-    Type: String
-    Default: intership-sam-template-demo
-
-  InfraRepoBranch:
-    Type: String
-    Default: master
 
 Resources:
   # roles
@@ -126,3 +108,21 @@ Outputs:
     Description: "Exporting values"
     Export:
       Name: !Sub "${AWS::StackName}-CodePipelineRoleID"
+
+  CodePipelineRoleArn:
+    Value: !GetAtt CodePipelineRole.Arn
+    Description: "Exporting values"
+    Export:
+      Name: !Sub "${AWS::StackName}-CodePipelineRoleArn"
+
+  CodeBuildRoleID:
+    Value: !Ref CodeBuildRole
+    Description: "Exporting values"
+    Export:
+      Name: !Sub "${AWS::StackName}-CodeBuildRoleID"
+
+  CodeBuildRoleArn:
+    Value: !GetAtt CodeBuildRole.Arn
+    Description: "Exporting values"
+    Export:
+      Name: !Sub "${AWS::StackName}-CodeBuildRoleArn"
