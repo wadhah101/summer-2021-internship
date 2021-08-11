@@ -34,7 +34,7 @@ Resources:
     Properties:
       Description: Run CFN-lint
       ServiceRole:
-        Fn::ImportValue: !Sub "${RoleStackName}-CodeBuildRoleArn"
+        Fn::ImportValue: !Join ["-", [!Ref RoleStackName, CodeBuildRoleArn]]
 
       Artifacts:
         Type: CODEPIPELINE
@@ -55,7 +55,7 @@ Resources:
     Properties:
       Description: Run CFN-lint
       ServiceRole:
-        Fn::ImportValue: !Sub "${RoleStackName}-CodeBuildRoleArn"
+        Fn::ImportValue: !Join ["-", [!Ref RoleStackName, CodeBuildRoleArn]]
 
       Artifacts:
         Type: CODEPIPELINE
@@ -76,7 +76,7 @@ Resources:
     Properties:
       Description: Run TaskCat
       ServiceRole:
-        Fn::ImportValue: !Sub "${RoleStackName}-CodeBuildRoleArn"
+        Fn::ImportValue: !Join ["-", [!Ref RoleStackName, CodeBuildRoleArn]]
 
       Artifacts:
         Type: CODEPIPELINE
@@ -98,7 +98,7 @@ Resources:
     Properties:
       Description: Package sam file
       ServiceRole:
-        Fn::ImportValue: !Sub "${RoleStackName}-CodeBuildRoleArn"
+        Fn::ImportValue: !Join ["-", [!Ref RoleStackName, CodeBuildRoleArn]]
 
       Artifacts:
         Type: CODEPIPELINE
@@ -123,7 +123,7 @@ Resources:
     Properties:
       Description: Run sam
       ServiceRole:
-        Fn::ImportValue: !Sub "${RoleStackName}-CodeBuildRoleArn"
+        Fn::ImportValue: !Join ["-", [!Ref RoleStackName, CodeBuildRoleArn]]
 
       Artifacts:
         Type: CODEPIPELINE
@@ -147,7 +147,7 @@ Resources:
     Type: AWS::CodePipeline::Pipeline
     Properties:
       RoleArn:
-        Fn::ImportValue: !Sub "${RoleStackName}-CodePipelineRoleArn"
+        Fn::ImportValue: !Join ["-", [!Ref RoleStackName, CodePipelineRoleArn]]
 
       Stages:
         - Name: CodeSourcing
@@ -323,4 +323,8 @@ Outputs:
   PipelineID:
     Value: !Ref Pipeline
     Export:
-      Name: !Sub "${AWS::StackName}-PipelineID"
+      Name: !Join ["-", [!Ref AWS::StackName, PipelineID]]
+  PipelineArn:
+    Value: !Sub "arn:${AWS::Partition}:codepipeline:${AWS::Region}:${AWS::AccountId}:${Pipeline}"
+    Export:
+      Name: !Join ["-", [!Ref AWS::StackName, PipelineArn]]

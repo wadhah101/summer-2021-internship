@@ -36,7 +36,7 @@ Resources:
         #     - SUCCEEDED
         #     - FAILED
         resources:
-          - Fn::ImportValue: !Join ["-", [!Ref PipelineStackName, PipelineID]]
+          - Fn::ImportValue: !Join ["-", [!Ref PipelineStackName, PipelineArn]]
       State: ENABLED
 
       Targets:
