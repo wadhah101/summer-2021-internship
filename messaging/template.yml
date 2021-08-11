@@ -30,11 +30,11 @@ Resources:
         source:
           - aws.codepipeline
         detail-type:
-          - CodePipeline Stage Execution State Change
-        # detail:
-        #   state:
-        #     - SUCCEEDED
-        #     - FAILED
+          - CodePipeline Pipeline Execution State Change
+        detail:
+          state:
+            - SUCCEEDED
+            - FAILED
         resources:
           - Fn::ImportValue: !Join ["-", [!Ref PipelineStackName, PipelineArn]]
       State: ENABLED
