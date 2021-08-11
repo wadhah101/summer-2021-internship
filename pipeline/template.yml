@@ -3,7 +3,6 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: CodePipeline with CodeBuild workflow to run TaskCat ,  cfn-lint , cfn-nag
 Transform: AWS::Serverless-2016-10-31
 Parameters:
-  # build related params
   RoleStackName:
     Type: String
     Default: cfn-lint-pipeline-roles
@@ -34,8 +33,6 @@ Resources:
     Type: AWS::CodeBuild::Project
     Properties:
       Description: Run CFN-lint
-      # ServiceRole: !GetAtt CodeBuildRole.Arn
-
       ServiceRole:
         Fn::ImportValue: !Sub "${RoleStackName}-CodeBuildRoleArn"
 

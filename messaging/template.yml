@@ -7,6 +7,15 @@ Parameters:
   PipelineStackName:
     Type: String
     Default: cfn-lint-pipeline-main
+  EnvType:
+    Type: String
+    Default: Dev
+    AllowedValues:
+      - Dev
+      - Prod
+
+Conditions:
+  CreateDevResource: !Equals [!Ref EnvType, Dev]
 
 Resources:
   MySNSTopic:
@@ -21,14 +30,13 @@ Resources:
         source:
           - aws.codepipeline
         detail-type:
-          - CodePipeline Pipeline Execution State Change
-        detail:
-          state:
-            - SUCCEEDED
-            - FAILED
+          - CodePipeline Stage Execution State Change
+        # detail:
+        #   state:
+        #     - SUCCEEDED
+        #     - FAILED
         resources:
-          - Fn::ImportValue: !Sub "${PipelineStackName}-PipelineID"
-
+          - Fn::ImportValue: !Join ["-", [!Ref PipelineStackName, PipelineID]]
       State: ENABLED
 
       Targets:
@@ -48,8 +56,16 @@ Resources:
       Topics:
         - !Ref MySNSTopic
 
+  EmailVerification:
+    Condition: CreateDevResource
+    Type: "AWS::SNS::Subscription"
+    Properties:
+      TopicArn: !Ref MySNSTopic
+      Endpoint: wadhah.mahroug15@gmail.com
+      Protocol: email
+
 Outputs:
   SNSTopicID:
     Value: !Ref MySNSTopic
     Export:
-      Name: !Sub "${AWS::StackName}-SNSTopicID"
+      Name: !Join ["-", [!Ref "AWS::StackName", SNSTopicID]]
