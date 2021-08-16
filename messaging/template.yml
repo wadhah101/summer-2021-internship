@@ -68,6 +68,13 @@ Resources:
       Endpoint: wadhah.mahroug15@gmail.com
       Protocol: email
 
+  EmailStageVerification:
+    Type: "AWS::SNS::Subscription"
+    Properties:
+      TopicArn: !Ref StageNotificationSNSTopic
+      Endpoint: wadhah.mahroug15@gmail.com
+      Protocol: email
+
 Outputs:
   # resource IDS
   FinalSNSTopicID:

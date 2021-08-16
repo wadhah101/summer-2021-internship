@@ -6,6 +6,7 @@ phases:
       - python --version
   build:
     commands:
+      - echo $CODEPIPELINE_EX_ID
       - echo Linting started on `date`
       # ||  [ `expr $? % 4` -eq 0 ]   4 , 8 , 12 are info and warnings ,we can ignore them safely
       - cfn-lint $CODEBUILD_SRC_DIR_PackagingArtifacts/${SAM_TEMPLATE_FILE} --output-file lint.json -f json ||  [ `expr $? % 4` -eq 0 ]
