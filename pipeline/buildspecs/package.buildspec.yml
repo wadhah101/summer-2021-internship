@@ -7,6 +7,7 @@ phases:
       - echo install phase started on `date`
   build:
     commands:
+      - echo $Release_ID
       - echo Build phase started on `date`
       - mkdir output
       - sam package --s3-bucket ${BUCKET_NAME} --template-file ${CODEBUILD_SRC_DIR_ProjectSourceCode}/${SAM_TEMPLATE_FILE} > output/${SAM_TEMPLATE_FILE}
