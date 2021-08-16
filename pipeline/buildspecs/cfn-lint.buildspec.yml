@@ -7,7 +7,8 @@ phases:
   build:
     commands:
       - echo Linting started on `date`
-      - cfn-lint $CODEBUILD_SRC_DIR_PackagingArtifacts/${SAM_TEMPLATE_FILE} --output-file lint.json -f json
+      # ||  [ `expr $? % 4` -eq 0 ]   4 , 8 , 12 are info and warnings ,we can ignore them safely
+      - cfn-lint $CODEBUILD_SRC_DIR_PackagingArtifacts/${SAM_TEMPLATE_FILE} --output-file lint.json -f json ||  [ `expr $? % 4` -eq 0 ]
       - cat lint.json
   post_build:
     commands:
