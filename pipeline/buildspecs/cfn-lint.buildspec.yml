@@ -15,4 +15,4 @@ phases:
 
 artifacts:
   files:
-    - "lint.txt"
+    - "lint.json"
