@@ -7,6 +7,10 @@ Parameters:
     Type: String
     Default: cfn-lint-pipeline-roles
 
+  MessagingStackName:
+    Type: String
+    Default: cfn-lint-pipeline-messaging
+
   StorageStackName:
     Type: String
     Default: cfn-lint-pipeline-storage
@@ -288,11 +292,10 @@ Resources:
               Configuration:
                 BucketName:
                   Fn::ImportValue: !Sub "${StorageStackName}-LintingBucketID"
-
                 Extract: true
               RunOrder: 1
 
-        - Name: Deploy
+        - Name: DeployDev
           Actions:
             - InputArtifacts:
                 - Name: PackagingArtifacts
@@ -304,8 +307,74 @@ Resources:
                 Owner: AWS
                 Version: "1"
                 Provider: CodeBuild
-              OutputArtifacts:
-                - Name: SAMArtifacts
+
+              Configuration:
+                ProjectName: !Ref SAMBuildDeploy
+                PrimarySource: PipelineSourceCode
+              RunOrder: 2
+
+        - Name: DeployStage
+          Actions:
+            - Name: ApproveByDeveloper
+              InputArtifacts: []
+              ActionTypeId:
+                Category: Approval
+                Owner: AWS
+                Version: "1"
+                Provider: Manual
+              Configuration:
+                NotificationArn:
+                  Fn::ImportValue:
+                    !Join [
+                      "-",
+                      [!Ref MessagingStackName, StageNotificationSNSTopicArn],
+                    ]
+                CustomData: "Review and approve deploying to stage"
+                ExternalEntityLink: www.todo.com
+              RunOrder: 1
+            - InputArtifacts:
+                - Name: PackagingArtifacts
+                - Name: ProjectSourceCode
+                - Name: PipelineSourceCode
+              Name: DeploySAM
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: "1"
+                Provider: CodeBuild
+              Configuration:
+                ProjectName: !Ref SAMBuildDeploy
+                PrimarySource: PipelineSourceCode
+              RunOrder: 2
+
+        - Name: DeployProd
+          Actions:
+            - Name: ApproveByOwner
+              InputArtifacts: []
+              Configuration:
+                NotificationArn:
+                  Fn::ImportValue:
+                    !Join [
+                      "-",
+                      [!Ref MessagingStackName, ProdNotificationSNSTopicArn],
+                    ]
+                CustomData: "Review and approve deploying to production"
+                ExternalEntityLink: www.todo.com
+              ActionTypeId:
+                Category: Approval
+                Owner: AWS
+                Version: "1"
+                Provider: Manual
+            - Name: DeploySAM
+              InputArtifacts:
+                - Name: PackagingArtifacts
+                - Name: ProjectSourceCode
+                - Name: PipelineSourceCode
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: "1"
+                Provider: CodeBuild
               Configuration:
                 ProjectName: !Ref SAMBuildDeploy
                 PrimarySource: PipelineSourceCode

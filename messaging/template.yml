@@ -4,9 +4,9 @@ Description: CodePipeline with CodeBuild workflow to run TaskCat ,  cfn-lint , c
 Transform: AWS::Serverless-2016-10-31
 
 Parameters:
-  PipelineStackName:
-    Type: String
-    Default: cfn-lint-pipeline-main
+  # PipelineStackName:
+  #   Type: String
+  #   Default: cfn-lint-pipeline-main
   EnvType:
     Type: String
     Default: Dev
@@ -18,30 +18,34 @@ Conditions:
   CreateDevResource: !Equals [!Ref EnvType, Dev]
 
 Resources:
-  MySNSTopic:
+  StageNotificationSNSTopic:
     Type: AWS::SNS::Topic
-    Properties:
-      TopicName: "cfntopic"
 
-  CodePipelineFinishRule:
-    Type: "AWS::Events::Rule"
-    Properties:
-      EventPattern:
-        source:
-          - aws.codepipeline
-        detail-type:
-          - CodePipeline Pipeline Execution State Change
-        detail:
-          state:
-            - SUCCEEDED
-            - FAILED
-        resources:
-          - Fn::ImportValue: !Join ["-", [!Ref PipelineStackName, PipelineArn]]
-      State: ENABLED
+  ProdNotificationSNSTopic:
+    Type: AWS::SNS::Topic
 
-      Targets:
-        - Arn: !Ref MySNSTopic
-          Id: "OpsTopic"
+  FinalSNSTopic:
+    Type: AWS::SNS::Topic
+
+  # CodePipelineFinishRule:
+  #   Type: "AWS::Events::Rule"
+  #   Properties:
+  #     EventPattern:
+  #       source:
+  #         - aws.codepipeline
+  #       detail-type:
+  #         - CodePipeline Pipeline Execution State Change
+  #       detail:
+  #         state:
+  #           - SUCCEEDED
+  #           - FAILED
+  #       resources:
+  #         - Fn::ImportValue: !Join ["-", [!Ref PipelineStackName, PipelineArn]]
+  #     State: ENABLED
+
+  #     Targets:
+  #       - Arn: !Ref FinalSNSTopic
+  #         Id: "OpsTopic"
 
   EventTopicPolicy:
     Type: "AWS::SNS::TopicPolicy"
@@ -54,18 +58,45 @@ Resources:
             Action: "sns:Publish"
             Resource: "*"
       Topics:
-        - !Ref MySNSTopic
+        - !Ref FinalSNSTopic
 
   EmailVerification:
     Condition: CreateDevResource
     Type: "AWS::SNS::Subscription"
     Properties:
-      TopicArn: !Ref MySNSTopic
+      TopicArn: !Ref FinalSNSTopic
       Endpoint: wadhah.mahroug15@gmail.com
       Protocol: email
 
 Outputs:
-  SNSTopicID:
-    Value: !Ref MySNSTopic
+  # resource IDS
+  FinalSNSTopicID:
+    Value: !Ref FinalSNSTopic
     Export:
-      Name: !Join ["-", [!Ref "AWS::StackName", SNSTopicID]]
+      Name: !Join ["-", [!Ref "AWS::StackName", FinalSNSTopic]]
+
+  StageNotificationSNSTopicID:
+    Value: !Ref StageNotificationSNSTopic
+    Export:
+      Name: !Join ["-", [!Ref "AWS::StackName", StageNotificationSNSTopic]]
+
+  ProdNotificationSNSTopicID:
+    Value: !Ref ProdNotificationSNSTopic
+    Export:
+      Name: !Join ["-", [!Ref "AWS::StackName", ProdNotificationSNSTopic]]
+
+  # ARNs
+  FinalSNSTopicArn:
+    Value: !Sub "arn:${AWS::Partition}:sns:${AWS::Region}:${AWS::AccountId}:${FinalSNSTopic}"
+    Export:
+      Name: !Join ["-", [!Ref "AWS::StackName", FinalSNSTopicArn]]
+
+  StageNotificationSNSTopicArn:
+    Value: !Sub "arn:${AWS::Partition}:sns:${AWS::Region}:${AWS::AccountId}:${StageNotificationSNSTopic}"
+    Export:
+      Name: !Join ["-", [!Ref "AWS::StackName", StageNotificationSNSTopicArn]]
+
+  ProdNotificationSNSTopicArn:
+    Value: !Sub "arn:${AWS::Partition}:sns:${AWS::Region}:${AWS::AccountId}:${ProdNotificationSNSTopic}"
+    Export:
+      Name: !Join ["-", [!Ref "AWS::StackName", ProdNotificationSNSTopicArn]]

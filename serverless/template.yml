@@ -43,6 +43,7 @@ Resources:
           Type: SNS
           Properties:
             Topic:
-              Fn::ImportValue: !Sub ${MessagingStackName}-SNSTopicID
+              Fn::ImportValue:
+                !Join ["-", [!Ref "MessagingStackName", FinalSNSTopic]]
       Policies:
         - AWSLambdaBasicExecutionRole

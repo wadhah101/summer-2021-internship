@@ -8,4 +8,4 @@ s3_prefix = "cfn-lint-pipeline-main"
 region = "us-west-1"
 capabilities = "CAPABILITY_IAM"
 parameter_overrides = "RoleStackName=\"cfn-lint-pipeline-roles\" StorageStackName=\"cfn-lint-pipeline-storage\" AppSAMTemplateFile=\"app.template.yml\" SelfRepo=\"cfn-test-lint-pipeline\" InfraRepo=\"intership-sam-template-demo\" InfraRepoBranch=\"master\""
-confirm_changeset = true
+confirm_changeset = false
