@@ -8,7 +8,7 @@ phases:
     commands:
       - echo Linting started on `date`
       - cfn-lint $CODEBUILD_SRC_DIR_PackagingArtifacts/${SAM_TEMPLATE_FILE} --output-file lint.json -f json
-      - cat lint.txt
+      - cat lint.json
   post_build:
     commands:
       - echo Linting completed on `date`
