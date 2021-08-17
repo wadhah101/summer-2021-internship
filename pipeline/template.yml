@@ -198,7 +198,7 @@ Resources:
               Configuration:
                 ProjectName: !Ref PackageSamBuild
                 PrimarySource: PipelineSourceCode
-                EnvironmentVariables: '[{"name":"Release_ID","value":"#{codepipeline.PipelineExecutionId}","type":"PLAINTEXT"}]'
+                # EnvironmentVariables: '[{"name":"Release_ID","value":"#{codepipeline.PipelineExecutionId}","type":"PLAINTEXT"}]'
 
         - Name: LintingTesting
           Actions:
@@ -264,7 +264,7 @@ Resources:
                 BucketName:
                   Fn::ImportValue: !Sub "${StorageStackName}-LintingBucketID"
                 Extract: true
-                ObjectKey: "#{codepipeline.PipelineExecutionId}/"
+                ObjectKey: "#{codepipeline.PipelineExecutionId}"
 
               RunOrder: 1
 
@@ -280,7 +280,7 @@ Resources:
                 BucketName:
                   Fn::ImportValue: !Sub "${StorageStackName}-LintingBucketID"
                 Extract: true
-                ObjectKey: "#{codepipeline.PipelineExecutionId}/"
+                ObjectKey: "#{codepipeline.PipelineExecutionId}"
               RunOrder: 1
 
             - InputArtifacts:
@@ -294,7 +294,7 @@ Resources:
               Configuration:
                 BucketName:
                   Fn::ImportValue: !Sub "${StorageStackName}-LintingBucketID"
-                ObjectKey: "#{codepipeline.PipelineExecutionId}/"
+                ObjectKey: "#{codepipeline.PipelineExecutionId}"
                 Extract: true
               RunOrder: 1
 
