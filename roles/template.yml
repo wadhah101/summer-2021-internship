@@ -58,6 +58,11 @@ Resources:
                   - iam:PassRole
                 Resource: "*"
                 Effect: Allow
+                # TODO be more specefic
+              - Action:
+                  - sns:*
+                Resource: "*"
+                Effect: Allow
             Version: "2012-10-17"
 
   # specify roles

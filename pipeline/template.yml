@@ -38,7 +38,7 @@ Resources:
     Properties:
       Description: Run CFN-lint
       ServiceRole:
-        Fn::ImportValue: !Join ["-", [!Ref RoleStackName, CodeBuildRoleArn]]
+        Fn::ImportValue: !Sub "${RoleStackName}-CodeBuildRoleArn"
 
       Artifacts:
         Type: CODEPIPELINE
@@ -59,8 +59,7 @@ Resources:
     Properties:
       Description: Run CFN-lint
       ServiceRole:
-        Fn::ImportValue: !Join ["-", [!Ref RoleStackName, CodeBuildRoleArn]]
-
+        Fn::ImportValue: !Sub "${RoleStackName}-CodeBuildRoleArn"
       Artifacts:
         Type: CODEPIPELINE
       Environment:
@@ -80,8 +79,7 @@ Resources:
     Properties:
       Description: Run TaskCat
       ServiceRole:
-        Fn::ImportValue: !Join ["-", [!Ref RoleStackName, CodeBuildRoleArn]]
-
+        Fn::ImportValue: !Sub "${RoleStackName}-CodeBuildRoleArn"
       Artifacts:
         Type: CODEPIPELINE
       Environment:
@@ -102,7 +100,7 @@ Resources:
     Properties:
       Description: Package sam file
       ServiceRole:
-        Fn::ImportValue: !Join ["-", [!Ref RoleStackName, CodeBuildRoleArn]]
+        Fn::ImportValue: !Sub "${RoleStackName}-CodeBuildRoleArn"
 
       Artifacts:
         Type: CODEPIPELINE
@@ -127,7 +125,7 @@ Resources:
     Properties:
       Description: Run sam
       ServiceRole:
-        Fn::ImportValue: !Join ["-", [!Ref RoleStackName, CodeBuildRoleArn]]
+        Fn::ImportValue: !Sub "${RoleStackName}-CodeBuildRoleArn"
 
       Artifacts:
         Type: CODEPIPELINE
@@ -151,7 +149,7 @@ Resources:
     Type: AWS::CodePipeline::Pipeline
     Properties:
       RoleArn:
-        Fn::ImportValue: !Join ["-", [!Ref RoleStackName, CodePipelineRoleArn]]
+        Fn::ImportValue: !Sub "${RoleStackName}-CodePipelineRoleArn"
 
       Stages:
         - Name: CodeSourcing
@@ -327,13 +325,9 @@ Resources:
                 Provider: Manual
               Configuration:
                 NotificationArn:
-                  Fn::ImportValue:
-                    !Join [
-                      "-",
-                      [!Ref MessagingStackName, StageNotificationSNSTopicArn],
-                    ]
+                  Fn::ImportValue: !Sub "${MessagingStackName}-StageNotificationSNSTopicArn"
                 CustomData: "Review and approve deploying to stage with ID #{codepipeline.PipelineExecutionId}"
-                ExternalEntityLink: www.todo.com
+                ExternalEntityLink: http://www.example.com/
               RunOrder: 1
             - InputArtifacts:
                 - Name: PackagingArtifacts
@@ -356,13 +350,9 @@ Resources:
               InputArtifacts: []
               Configuration:
                 NotificationArn:
-                  Fn::ImportValue:
-                    !Join [
-                      "-",
-                      [!Ref MessagingStackName, ProdNotificationSNSTopicArn],
-                    ]
+                  Fn::ImportValue: !Sub "${MessagingStackName}-ProdNotificationSNSTopicArn"
                 CustomData: "Review and approve deploying to production"
-                ExternalEntityLink: www.todo.com
+                ExternalEntityLink: http://www.example.com/
               ActionTypeId:
                 Category: Approval
                 Owner: AWS

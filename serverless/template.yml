@@ -38,12 +38,12 @@ Resources:
     Properties:
       Runtime: nodejs14.x
       Handler: dist/mail/approve-mail.handler
-      Events:
-        SNSTopicEvent:
-          Type: SNS
-          Properties:
-            Topic:
-              Fn::ImportValue:
-                !Join ["-", [!Ref "MessagingStackName", FinalSNSTopic]]
+      # Events:
+      #   SNSTopicEvent:
+      #     Type: SNS
+      #     Properties:
+      #       Topic:
+      #         Fn::ImportValue:
+      #           !Join ["-", [!Ref "MessagingStackName", FinalSNSTopic]]
       Policies:
         - AWSLambdaBasicExecutionRole

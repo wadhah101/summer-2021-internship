@@ -75,35 +75,66 @@ Resources:
       Endpoint: wadhah.mahroug15@gmail.com
       Protocol: email
 
+  # ApproveByDevPolicy:
+  #   Type: "AWS::IAM::Policy"
+  #   Properties:
+  #     Users: []
+  #     PolicyName: CFNUsers
+  #     PolicyDocument:
+  #       Version: "2012-10-17"
+  #       Statement:
+  #         - Action:
+  #             - codepipeline:ListPipelines
+  #           Resource:
+  #             - "*"
+  #           Effect: Allow
+  #         - Action:
+  #             - codepipeline:GetPipeline
+  #             - codepipeline:GetPipelineState
+  #             - codepipeline:GetPipelineExecution
+  #           Effect: Allow
+  #           Resource: arn:aws:codepipeline:us-east-2:80398EXAMPLE:MyFirstPipeline
+  #         - Action:
+  #             - codepipeline:PutApprovalResult
+  #           Effect: Allow
+  #           Resource: arn:aws:codepipeline:us-east-2:80398EXAMPLE:MyFirstPipeline/MyApprovalStage/MyApprovalAction
+  # ApproveByOwnerPolicy:
+  #   Type: "AWS::IAM::Policy"
+  #   Properties:
+  #     Users: []
+  #     PolicyName: CFNUsers
+  #     PolicyDocument:
+  #       Version: "2012-10-17"
+  #       Statement:
+  #         - Action:
+  #             - codepipeline:ListPipelines
+  #           Resource:
+  #             - "*"
+  #           Effect: Allow
+  #         - Action:
+  #             - codepipeline:GetPipeline
+  #             - codepipeline:GetPipelineState
+  #             - codepipeline:GetPipelineExecution
+  #           Effect: Allow
+  #           Resource: arn:aws:codepipeline:us-east-2:80398EXAMPLE:MyFirstPipeline
+  #         - Action:
+  #             - codepipeline:PutApprovalResult
+  #           Effect: Allow
+  #           Resource: arn:aws:codepipeline:us-east-2:80398EXAMPLE:MyFirstPipeline/MyApprovalStage/MyApprovalAction
+
 Outputs:
-  # resource IDS
-  FinalSNSTopicID:
-    Value: !Ref FinalSNSTopic
-    Export:
-      Name: !Join ["-", [!Ref "AWS::StackName", FinalSNSTopic]]
-
-  StageNotificationSNSTopicID:
-    Value: !Ref StageNotificationSNSTopic
-    Export:
-      Name: !Join ["-", [!Ref "AWS::StackName", StageNotificationSNSTopic]]
-
-  ProdNotificationSNSTopicID:
-    Value: !Ref ProdNotificationSNSTopic
-    Export:
-      Name: !Join ["-", [!Ref "AWS::StackName", ProdNotificationSNSTopic]]
-
-  # ARNs
+  # resource ARNs
   FinalSNSTopicArn:
-    Value: !Sub "arn:${AWS::Partition}:sns:${AWS::Region}:${AWS::AccountId}:${FinalSNSTopic}"
+    Value: !Ref FinalSNSTopic
     Export:
       Name: !Join ["-", [!Ref "AWS::StackName", FinalSNSTopicArn]]
 
   StageNotificationSNSTopicArn:
-    Value: !Sub "arn:${AWS::Partition}:sns:${AWS::Region}:${AWS::AccountId}:${StageNotificationSNSTopic}"
+    Value: !Ref StageNotificationSNSTopic
     Export:
       Name: !Join ["-", [!Ref "AWS::StackName", StageNotificationSNSTopicArn]]
 
   ProdNotificationSNSTopicArn:
-    Value: !Sub "arn:${AWS::Partition}:sns:${AWS::Region}:${AWS::AccountId}:${ProdNotificationSNSTopic}"
+    Value: !Ref ProdNotificationSNSTopic
     Export:
       Name: !Join ["-", [!Ref "AWS::StackName", ProdNotificationSNSTopicArn]]
