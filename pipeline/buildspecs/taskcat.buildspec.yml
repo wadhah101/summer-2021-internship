@@ -13,9 +13,11 @@ phases:
       - echo Build phase started on `date`
       - cp  $CODEBUILD_SRC_DIR_PackagingArtifacts/${SAM_TEMPLATE_FILE} app.package.yml
       - taskcat test run -d -i pipeline/.taskcat.yml
+      - mkdir $Execution_ID
+      - mv taskcat_outputs $Execution_ID
   post_build:
     commands:
       - echo Build completed on `date`
 artifacts:
   files:
-    - taskcat_outputs/**/*
+    - $Execution_ID/**/*
