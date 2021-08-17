@@ -76,11 +76,11 @@ Resources:
               - codepipeline:PutApprovalResult
             Effect: Allow
             Resource:
-              !Join [
-                "/",
-                [
-                  Fn::ImportValue: !Sub "${PipelineStackName}-PipelineArn",
-                  "DeployProd",
-                  "ApproveByOwner",
-                ],
-              ]
+              - !Join [
+                  "/",
+                  [
+                    Fn::ImportValue: !Sub "${PipelineStackName}-PipelineArn",
+                    "*",
+                    "*",
+                  ],
+                ]

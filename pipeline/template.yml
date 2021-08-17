@@ -185,6 +185,20 @@ Resources:
 
         - Name: Packaging
           Actions:
+            # TODO remove
+            # - Name: ApproveByDeveloperTest
+            #   InputArtifacts: []
+            #   ActionTypeId:
+            #     Category: Approval
+            #     Owner: AWS
+            #     Version: "1"
+            #     Provider: Manual
+            #   Configuration:
+            #     NotificationArn:
+            #       Fn::ImportValue: !Sub "${MessagingStackName}-StageNotificationSNSTopicArn"
+            #     CustomData: "Review and approve deploying to stage with ID #{codepipeline.PipelineExecutionId}"
+            #     ExternalEntityLink: http://www.example.com/
+            #   RunOrder: 1
             - InputArtifacts:
                 - Name: PipelineSourceCode
                 - Name: ProjectSourceCode

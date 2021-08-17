@@ -5,12 +5,18 @@
 build-SNSPayloadLogger:
 	$(MAKE) HANDLER=src/mail/approve-mail.ts build-lambda-common
 
+
+build-InsertBuildResult:
+	$(MAKE) HANDLER=src/database/addPipelineResult.ts build-lambda-common
+
 build-lambda-common:
 	npm install
 	rm -rf dist
 	echo "{\"extends\": \"./tsconfig.json\", \"include\": [\"${HANDLER}\"] }" > tsconfig-only-handler.json
 	npm run build -- --build tsconfig-only-handler.json
 	cp -r dist "$(ARTIFACTS_DIR)/"
+
+
 
 build-RuntimeDependenciesLayer:
 	mkdir -p "$(ARTIFACTS_DIR)/nodejs"

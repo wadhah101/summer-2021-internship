@@ -14,11 +14,23 @@ Resources:
       WebsiteConfiguration:
         IndexDocument: index.html
 
+  LintingTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: executionID
+        Type: String
+
   PipelineArtifactBucket:
     Type: AWS::S3::Bucket
     DeletionPolicy: Delete
 
 Outputs:
+  LintingTableID:
+    Value: !Ref LintingTable
+    Export:
+      Name: !Sub "${AWS::StackName}-LintingTableID"
+
   CodeBucketID:
     Value: !Ref CodeBucket
     Description: "CodeBucket"

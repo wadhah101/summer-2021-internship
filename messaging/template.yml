@@ -75,6 +75,13 @@ Resources:
       Endpoint: wadhah.mahroug15@gmail.com
       Protocol: email
 
+  # EmailProdVerification:
+  #   Type: "AWS::SNS::Subscription"
+  #   Properties:
+  #     TopicArn: !Ref ProdNotificationSNSTopic
+  #     Endpoint: wadhah.mahroug15@gmail.com
+  #     Protocol: email
+
 Outputs:
   # resource ARNs
   FinalSNSTopicArn:

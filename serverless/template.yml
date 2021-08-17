@@ -38,12 +38,28 @@ Resources:
     Properties:
       Runtime: nodejs14.x
       Handler: dist/mail/approve-mail.handler
-      # Events:
-      #   SNSTopicEvent:
-      #     Type: SNS
-      #     Properties:
-      #       Topic:
-      #         Fn::ImportValue:
-      #           !Join ["-", [!Ref "MessagingStackName", FinalSNSTopic]]
+      Events:
+        StageTopicEvent:
+          Type: SNS
+          Properties:
+            Topic:
+              Fn::ImportValue: !Sub "${MessagingStackName}-StageNotificationSNSTopicArn"
+        ProdopicEvent:
+          Type: SNS
+          Properties:
+            Topic:
+              Fn::ImportValue: !Sub "${MessagingStackName}-ProdNotificationSNSTopicArn"
+
+      Policies:
+        - AWSLambdaBasicExecutionRole
+
+  InsertBuildResult:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Runtime: nodejs14.x
+      Handler: dist/database/approve-mail.handler
+
       Policies:
         - AWSLambdaBasicExecutionRole
