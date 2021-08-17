@@ -1,0 +1,86 @@
+---
+AWSTemplateFormatVersion: "2010-09-09"
+Description: CodePipeline with CodeBuild workflow to run TaskCat ,  cfn-lint , cfn-nag
+Transform: AWS::Serverless-2016-10-31
+Parameters:
+  PipelineStackName:
+    Type: String
+    Description: location of the sam file to test and deploy
+    Default: cfn-lint-pipeline-main
+
+Resources:
+  DevGroup:
+    Type: AWS::IAM::Group
+    Properties:
+      Path: /
+
+  OwnerGroup:
+    Type: AWS::IAM::Group
+    Properties:
+      Path: /
+
+  ApproveByDevPolicy:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyName: ApproveWadhahPipelineDevPolicy
+      Groups: [!Ref DevGroup]
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Action:
+              - codepipeline:ListPipelines
+            Resource:
+              - "*"
+            Effect: Allow
+          - Action:
+              - codepipeline:GetPipeline
+              - codepipeline:GetPipelineState
+              - codepipeline:GetPipelineExecution
+            Effect: Allow
+            Resource:
+              Fn::ImportValue: !Sub "${PipelineStackName}-PipelineArn"
+          - Action:
+              - codepipeline:PutApprovalResult
+            Effect: Allow
+            Resource:
+              !Join [
+                "/",
+                [
+                  Fn::ImportValue: !Sub "${PipelineStackName}-PipelineArn",
+                  "DeployStage",
+                  "ApproveByDeveloper",
+                ],
+              ]
+
+  ApproveByOwnerPolicy:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyName: ApproveWadhahPipelineOwnerPolicy
+      Groups: [!Ref OwnerGroup]
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Action:
+              - codepipeline:ListPipelines
+            Resource:
+              - "*"
+            Effect: Allow
+          - Action:
+              - codepipeline:GetPipeline
+              - codepipeline:GetPipelineState
+              - codepipeline:GetPipelineExecution
+            Effect: Allow
+            Resource:
+              Fn::ImportValue: !Sub "${PipelineStackName}-PipelineArn"
+          - Action:
+              - codepipeline:PutApprovalResult
+            Effect: Allow
+            Resource:
+              !Join [
+                "/",
+                [
+                  Fn::ImportValue: !Sub "${PipelineStackName}-PipelineArn",
+                  "DeployProd",
+                  "ApproveByOwner",
+                ],
+              ]

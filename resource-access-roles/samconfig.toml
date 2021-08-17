@@ -1,0 +1,10 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "cfn-lint-pipeline-role-access"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-1bc9iel2dapz1"
+s3_prefix = "cfn-lint-pipeline-role-access"
+region = "us-west-1"
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = "PipelineStackName=\"cfn-lint-pipeline-main\""
