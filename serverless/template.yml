@@ -9,6 +9,16 @@ Parameters:
     Description: location of the sam file to test and deploy
     Default: cfn-lint-pipeline-messaging
 
+  PipelineStackName:
+    Type: String
+    Description: location of the sam file to test and deploy
+    Default: cfn-lint-pipeline-main
+
+  StorageStackName:
+    Type: String
+    Description: location of the sam file to test and deploy
+    Default: cfn-lint-pipeline-storage
+
 Globals:
   Function:
     Layers:
@@ -58,8 +68,36 @@ Resources:
     Metadata:
       BuildMethod: makefile
     Properties:
-      Runtime: nodejs14.x
-      Handler: dist/database/approve-mail.handler
+      Environment:
+        Variables:
+          TABLE_NAME:
+            Fn::ImportValue: !Sub "${StorageStackName}-LintingTableID"
+          BUCKET_NAME:
+            Fn::ImportValue: !Sub "${StorageStackName}-LintingBucketID"
 
+      Runtime: nodejs14.x
+      Handler: dist/database/addPipelineResult.handler
+      Events:
+        PipelineLineUploadEventBridge:
+          Type: EventBridgeRule
+          Properties:
+            Pattern:
+              source:
+                - aws.codepipeline
+              detail-type:
+                - CodePipeline Stage Execution State Change
+              detail:
+                state:
+                  - SUCCEEDED
+                stage:
+                  - UploadLintingResult
+              resources:
+                - Fn::ImportValue: !Sub "${PipelineStackName}-PipelineArn"
       Policies:
         - AWSLambdaBasicExecutionRole
+        - S3ReadPolicy:
+            BucketName:
+              Fn::ImportValue: !Sub "${StorageStackName}-LintingBucketID"
+        - DynamoDBCrudPolicy:
+            TableName:
+              Fn::ImportValue: !Sub "${StorageStackName}-LintingTableID"
