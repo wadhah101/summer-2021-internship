@@ -6,14 +6,13 @@ phases:
       - ruby --version
   build:
     commands:
-      - mkdir $Execution_ID
       - echo Linting started on `date`
-      - cfn_nag_scan --input-path $CODEBUILD_SRC_DIR_PackagingArtifacts/${SAM_TEMPLATE_FILE} -o json > "${Execution_ID}/nag.json"
-      - cat "${Execution_ID}/nag.json"
+      - cfn_nag_scan --input-path $CODEBUILD_SRC_DIR_PackagingArtifacts/${SAM_TEMPLATE_FILE} -o json > nag.json
+      - cat nag.json
   post_build:
     commands:
       - echo Linting completed on `date`
 
 artifacts:
   files:
-    - $Execution_ID/**/*
+    - "nag.json"

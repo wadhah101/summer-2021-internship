@@ -198,7 +198,7 @@ Resources:
               Configuration:
                 ProjectName: !Ref PackageSamBuild
                 PrimarySource: PipelineSourceCode
-                # EnvironmentVariables: '[{"name":"Release_ID","value":"#{codepipeline.PipelineExecutionId}","type":"PLAINTEXT"}]'
+                EnvironmentVariables: '[{"name":"Release_ID","value":"#{codepipeline.PipelineExecutionId}","type":"PLAINTEXT"}]'
 
         - Name: LintingTesting
           Actions:
@@ -214,7 +214,6 @@ Resources:
                 Version: "1"
                 Provider: CodeBuild
               Configuration:
-                EnvironmentVariables: '[{"name":"Execution_ID","value":"#{codepipeline.PipelineExecutionId}","type":"PLAINTEXT"}]'
                 ProjectName: !Ref CFNLintBuild
                 PrimarySource: PipelineSourceCode
               RunOrder: 1
@@ -231,7 +230,6 @@ Resources:
                 Version: "1"
                 Provider: CodeBuild
               Configuration:
-                EnvironmentVariables: '[{"name":"Execution_ID","value":"#{codepipeline.PipelineExecutionId}","type":"PLAINTEXT"}]'
                 ProjectName: !Ref CFNNAGBuild
                 PrimarySource: PipelineSourceCode
               RunOrder: 1
@@ -248,7 +246,6 @@ Resources:
                 Version: "1"
                 Provider: CodeBuild
               Configuration:
-                EnvironmentVariables: '[{"name":"Execution_ID","value":"#{codepipeline.PipelineExecutionId}","type":"PLAINTEXT"}]'
                 ProjectName: !Ref TaskCatBuild
                 PrimarySource: PipelineSourceCode
               RunOrder: 1
@@ -266,6 +263,7 @@ Resources:
               Configuration:
                 BucketName:
                   Fn::ImportValue: !Sub "${StorageStackName}-LintingBucketID"
+
                 Extract: true
               RunOrder: 1
 

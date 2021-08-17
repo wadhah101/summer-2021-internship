@@ -6,15 +6,15 @@ phases:
       - python --version
   build:
     commands:
-      - mkdir $Execution_ID
+      - echo $CODEPIPELINE_EX_ID
       - echo Linting started on `date`
       # ||  [ `expr $? % 4` -eq 0 ]   4 , 8 , 12 are info and warnings ,we can ignore them safely
-      - cfn-lint $CODEBUILD_SRC_DIR_PackagingArtifacts/${SAM_TEMPLATE_FILE} --output-file "${Execution_ID}/lint.json" -f json ||  [ `expr $? % 4` -eq 0 ]
-      - cat "${Execution_ID}/lint.json"
+      - cfn-lint $CODEBUILD_SRC_DIR_PackagingArtifacts/${SAM_TEMPLATE_FILE} --output-file lint.json -f json ||  [ `expr $? % 4` -eq 0 ]
+      - cat lint.json
   post_build:
     commands:
       - echo Linting completed on `date`
 
 artifacts:
   files:
-    - $Execution_ID/**/*
+    - "lint.json"
