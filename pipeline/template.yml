@@ -263,8 +263,9 @@ Resources:
               Configuration:
                 BucketName:
                   Fn::ImportValue: !Sub "${StorageStackName}-LintingBucketID"
-
                 Extract: true
+                ObjectKey: "#{codepipeline.PipelineExecutionId}/"
+
               RunOrder: 1
 
             - InputArtifacts:
@@ -278,8 +279,8 @@ Resources:
               Configuration:
                 BucketName:
                   Fn::ImportValue: !Sub "${StorageStackName}-LintingBucketID"
-
                 Extract: true
+                ObjectKey: "#{codepipeline.PipelineExecutionId}/"
               RunOrder: 1
 
             - InputArtifacts:
@@ -293,6 +294,7 @@ Resources:
               Configuration:
                 BucketName:
                   Fn::ImportValue: !Sub "${StorageStackName}-LintingBucketID"
+                ObjectKey: "#{codepipeline.PipelineExecutionId}/"
                 Extract: true
               RunOrder: 1
 
