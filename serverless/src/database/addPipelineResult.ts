@@ -60,8 +60,8 @@ export const handler = async (
       .pipe(unzipper.ParseOne(/nag\.json/));
 
     const [lint, nag] = await Promise.all([
-      streamToString(nagStream),
       streamToString(lintZipStream),
+      streamToString(nagStream),
     ]);
 
     const [CFNLintResult, CFNNagResult] = [JSON.parse(lint), JSON.parse(nag)];
