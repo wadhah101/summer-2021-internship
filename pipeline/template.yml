@@ -15,6 +15,10 @@ Parameters:
     Type: String
     Default: cfn-lint-pipeline-storage
 
+  ServerlessStackName:
+    Type: String
+    Default: cfn-lint-pipeline-serverless
+
   AppSAMTemplateFile:
     Type: String
     Description: location of the sam file to test and deploy
@@ -283,34 +287,19 @@ Resources:
 
               RunOrder: 1
 
-            - InputArtifacts:
+            - Name: CFNLintUpload
+              InputArtifacts:
                 - Name: LintingArtifacts
-              Name: CFNLintUpload
-              ActionTypeId:
-                Category: Deploy
-                Owner: AWS
-                Version: "1"
-                Provider: S3
-              Configuration:
-                BucketName:
-                  Fn::ImportValue: !Sub "${StorageStackName}-LintingBucketID"
-                Extract: true
-                ObjectKey: "#{codepipeline.PipelineExecutionId}"
-              RunOrder: 1
-
-            - InputArtifacts:
                 - Name: NagArtifacts
-              Name: CFNNagUploads
               ActionTypeId:
-                Category: Deploy
+                Category: Invoke
                 Owner: AWS
                 Version: "1"
-                Provider: S3
+                Provider: Lambda
               Configuration:
-                BucketName:
-                  Fn::ImportValue: !Sub "${StorageStackName}-LintingBucketID"
-                ObjectKey: "#{codepipeline.PipelineExecutionId}"
-                Extract: true
+                FunctionName:
+                  Fn::ImportValue: !Sub "${ServerlessStackName}-InsertBuildResult"
+
               RunOrder: 1
 
         - Name: DeployDev

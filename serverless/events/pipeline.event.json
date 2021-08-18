@@ -1,0 +1,44 @@
+  {
+    "CodePipeline.job": {
+      "id": "ae37a529-2cf2-4a60-b767-f702d47a9ebf",
+      "accountId": "477886346812",
+      "data": {
+        "actionConfiguration": {
+          "configuration": {
+            "FunctionName": "cfn-lint-pipeline-serverless-InsertBuildResult-NW3tTZSTKNKo"
+          }
+        },
+        "inputArtifacts": [
+          {
+            "name": "LintingArtifacts",
+            "revision": null,
+            "location": {
+              "type": "S3",
+              "s3Location": {
+                "bucketName": "cfn-lint-pipeline-storage-pipelineartifactbucket-1nvcutbaqvin6",
+                "objectKey": "cfn-lint-pipeline-ma/LintingArt/troxoNa"
+              }
+            }
+          },
+          {
+            "name": "NagArtifacts",
+            "revision": null,
+            "location": {
+              "type": "S3",
+              "s3Location": {
+                "bucketName": "cfn-lint-pipeline-storage-pipelineartifactbucket-1nvcutbaqvin6",
+                "objectKey": "cfn-lint-pipeline-ma/NagArtifac/ZDvqxN3"
+              }
+            }
+          }
+        ],
+        "outputArtifacts": [],
+        "artifactCredentials": {
+          "accessKeyId": "ASIAW6RB66Y6JJIFCO2S",
+          "secretAccessKey": "iobLSTBvIeXUXRNMMTSu27c4dTUWEYdWzp2mhumW",
+          "sessionToken": "",
+          "expirationTime": 1629278863000
+        }
+      }
+    }
+  }

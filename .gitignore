@@ -4,6 +4,8 @@
 ### Linux ###
 *~
 
+env.json
+
 node_modules
 dist
 .aws-sam

@@ -4,15 +4,15 @@ Description: CodePipeline with CodeBuild workflow to run TaskCat ,  cfn-lint , c
 Transform: AWS::Serverless-2016-10-31
 
 Parameters:
-  MessagingStackName:
-    Type: String
-    Description: location of the sam file to test and deploy
-    Default: cfn-lint-pipeline-messaging
+  # MessagingStackName:
+  #   Type: String
+  #   Description: location of the sam file to test and deploy
+  #   Default: cfn-lint-pipeline-messaging
 
-  PipelineStackName:
-    Type: String
-    Description: location of the sam file to test and deploy
-    Default: cfn-lint-pipeline-main
+  # PipelineStackName:
+  #   Type: String
+  #   Description: location of the sam file to test and deploy
+  #   Default: cfn-lint-pipeline-main
 
   StorageStackName:
     Type: String
@@ -48,18 +48,6 @@ Resources:
     Properties:
       Runtime: nodejs14.x
       Handler: dist/mail/approve-mail.handler
-      Events:
-        StageTopicEvent:
-          Type: SNS
-          Properties:
-            Topic:
-              Fn::ImportValue: !Sub "${MessagingStackName}-StageNotificationSNSTopicArn"
-        ProdopicEvent:
-          Type: SNS
-          Properties:
-            Topic:
-              Fn::ImportValue: !Sub "${MessagingStackName}-ProdNotificationSNSTopicArn"
-
       Policies:
         - AWSLambdaBasicExecutionRole
 
@@ -72,32 +60,21 @@ Resources:
         Variables:
           TABLE_NAME:
             Fn::ImportValue: !Sub "${StorageStackName}-LintingTableID"
-          BUCKET_NAME:
-            Fn::ImportValue: !Sub "${StorageStackName}-LintingBucketID"
 
       Runtime: nodejs14.x
       Handler: dist/database/addPipelineResult.handler
-      Events:
-        PipelineLineUploadEventBridge:
-          Type: EventBridgeRule
-          Properties:
-            Pattern:
-              source:
-                - aws.codepipeline
-              detail-type:
-                - CodePipeline Stage Execution State Change
-              detail:
-                state:
-                  - SUCCEEDED
-                stage:
-                  - UploadLintingResult
-              resources:
-                - Fn::ImportValue: !Sub "${PipelineStackName}-PipelineArn"
       Policies:
         - AWSLambdaBasicExecutionRole
         - S3ReadPolicy:
             BucketName:
-              Fn::ImportValue: !Sub "${StorageStackName}-LintingBucketID"
+              Fn::ImportValue: !Sub "${StorageStackName}-PipelineArtifactBucketID"
         - DynamoDBCrudPolicy:
             TableName:
               Fn::ImportValue: !Sub "${StorageStackName}-LintingTableID"
+        - CodePipelineLambdaExecutionPolicy: {}
+
+Outputs:
+  InsertBuildResult:
+    Value: !Ref InsertBuildResult
+    Export:
+      Name: !Sub "${AWS::StackName}-InsertBuildResult"

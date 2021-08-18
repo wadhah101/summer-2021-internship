@@ -1,6 +1,7 @@
 {
   "extends": "@tsconfig/node14/tsconfig.json",
   "compilerOptions": {
+    "removeComments": true,
     "sourceMap": true,
     "allowJs": true,
     "target": "ES2020",
