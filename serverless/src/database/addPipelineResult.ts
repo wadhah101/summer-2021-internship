@@ -31,7 +31,7 @@ export const handler = async (
   const putJobSuccess = () =>
     codepipeline.putJobSuccessResult({ jobId }).promise();
   const postJobFailure = (failureDetails: CodePipeline.FailureDetails) =>
-    codepipeline.putJobFailureResult({ jobId, failureDetails });
+    codepipeline.putJobFailureResult({ jobId, failureDetails }).promise();
 
   try {
     const lintingArt = inputArtifacts.find(
@@ -76,7 +76,6 @@ export const handler = async (
     console.log(Item);
 
     const res = await db.put({ TableName: TABLE_NAME, Item }).promise();
-
     console.log(JSON.stringify(res));
 
     await putJobSuccess();
