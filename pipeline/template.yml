@@ -307,7 +307,7 @@ Resources:
                 ProjectName: !Ref SAMBuildDeploy
                 PrimarySource: PipelineSourceCode
                 EnvironmentVariables: '[{"name":"SAM_ENV","value":"dev","type":"PLAINTEXT"}]'
-                RunOrder: 2
+              RunOrder: 2
 
         - Name: DeployStage
           Actions:
