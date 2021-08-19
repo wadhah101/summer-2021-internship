@@ -9,4 +9,4 @@ phases:
       - sam build --template-file ${CODEBUILD_SRC_DIR_ProjectSourceCode}/${SAM_TEMPLATE_FILE}
   post_build:
     commands:
-      - sam deploy --template-file ${CODEBUILD_SRC_DIR_ProjectSourceCode}/${SAM_TEMPLATE_FILE} --no-fail-on-empty-changeset --stack-name="${APP_BASE_STACK_NAME}-${SAM_ENV}" --parameter-overrides="EnvType=${SAM_ENV}"
+      - sam deploy --template-file ${CODEBUILD_SRC_DIR_ProjectSourceCode}/${SAM_TEMPLATE_FILE} --no-fail-on-empty-changeset --stack-name="${APP_BASE_STACK_NAME}-${SAM_ENV}" --parameter-overrides="EnvType=${SAM_ENV}"  --s3-prefix="${APP_BASE_STACK_NAME}-${SAM_ENV}"
