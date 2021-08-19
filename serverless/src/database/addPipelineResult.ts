@@ -1,12 +1,12 @@
-import { join } from "path";
 import "source-map-support/register";
 import { DynamoDB, S3, CodePipeline } from "aws-sdk";
 import { FullCFNResult } from "../@types/FullCFNResult";
 import { CodePipelineEvent, Context } from "aws-lambda";
 import unzipper from "unzipper";
+import got from "got";
 import { Readable } from "stream";
 
-const { TABLE_NAME } = process.env;
+const { TABLE_NAME, AMPLIFY_WEB_HOOK } = process.env;
 const db = new DynamoDB.DocumentClient();
 const codepipeline = new CodePipeline();
 const s3 = new S3();
@@ -25,6 +25,7 @@ export const handler = async (
   context: Context
 ): Promise<void> => {
   if (!TABLE_NAME) throw new Error("TABLE_NAME not defined");
+  if (!AMPLIFY_WEB_HOOK) throw new Error("AMPLIFY_WEB_HOOK not defined");
 
   const inputArtifacts = event["CodePipeline.job"].data.inputArtifacts;
   const jobId = event["CodePipeline.job"].id;
@@ -77,6 +78,8 @@ export const handler = async (
 
     const res = await db.put({ TableName: TABLE_NAME, Item }).promise();
     console.log(JSON.stringify(res));
+    const r = await got.post(AMPLIFY_WEB_HOOK);
+    console.log(r.body);
 
     await putJobSuccess();
   } catch (e: unknown) {

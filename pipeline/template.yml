@@ -3,6 +3,9 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: CodePipeline with CodeBuild workflow to run TaskCat ,  cfn-lint , cfn-nag
 Transform: AWS::Serverless-2016-10-31
 Parameters:
+  AmplifyBaseUrl:
+    Type: String
+
   AppBaseStackName:
     Type: String
     Default: intership-infra
@@ -322,7 +325,7 @@ Resources:
                 NotificationArn:
                   Fn::ImportValue: !Sub "${MessagingStackName}-StageNotificationSNSTopicArn"
                 CustomData: "Review and approve deploying to stage with ID #{codepipeline.PipelineExecutionId}"
-                ExternalEntityLink: http://www.example.com/
+                ExternalEntityLink: !Sub "${AmplifyBaseUrl}/#{codepipeline.PipelineExecutionId}"
               RunOrder: 1
             - InputArtifacts:
                 - Name: PackagingArtifacts
@@ -348,7 +351,7 @@ Resources:
                 NotificationArn:
                   Fn::ImportValue: !Sub "${MessagingStackName}-ProdNotificationSNSTopicArn"
                 CustomData: "Review and approve deploying to production"
-                ExternalEntityLink: http://www.example.com/
+                ExternalEntityLink: !Sub "${AmplifyBaseUrl}/#{codepipeline.PipelineExecutionId}"
               ActionTypeId:
                 Category: Approval
                 Owner: AWS
