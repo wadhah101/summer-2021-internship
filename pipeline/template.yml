@@ -3,8 +3,9 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: CodePipeline with CodeBuild workflow to run TaskCat ,  cfn-lint , cfn-nag
 Transform: AWS::Serverless-2016-10-31
 Parameters:
-  AmplifyBaseUrl:
+  FrontEndRepo:
     Type: String
+    Default: internship-pipeline-report-front-end
 
   AppBaseStackName:
     Type: String
@@ -154,6 +155,33 @@ Resources:
         Type: CODEPIPELINE
         BuildSpec: pipeline/buildspecs/app.buildspec.yml
       TimeoutInMinutes: 10
+
+  FrontEndBuild:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Description: Run sam
+      ServiceRole:
+        Fn::ImportValue: !Sub "${RoleStackName}-CodeBuildRoleArn"
+
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: "aws/codebuild/standard:5.0"
+        EnvironmentVariables:
+          - Name: BUCKET_NAME
+            Value:
+              Fn::ImportValue: !Sub "${StorageStackName}-LintingBucketID"
+          - Name: TABLE_NAME
+            Value:
+              Fn::ImportValue: !Sub "${StorageStackName}-LintingTableID"
+
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: pipeline/buildspecs/front-end.buildspec.yml
+      TimeoutInMinutes: 15
+
   #################
 
   # PIPELINE
@@ -180,6 +208,20 @@ Resources:
                 BranchName: !Ref InfraRepoBranch
 
             - InputArtifacts: []
+              Name: FrontEndSource
+              ActionTypeId:
+                Category: Source
+                Owner: AWS
+                Version: "1"
+                Provider: CodeCommit
+              OutputArtifacts:
+                - Name: FrontEndSourceCode
+              Configuration:
+                RepositoryName: !Ref FrontEndRepo
+                BranchName: master
+                PollForSourceChanges: false
+
+            - InputArtifacts: []
               Name: PipelineSource
               ActionTypeId:
                 Category: Source
@@ -191,14 +233,13 @@ Resources:
               Configuration:
                 RepositoryName: !Ref SelfRepo
                 BranchName: !Ref InfraRepoBranch
+                PollForSourceChanges: false
 
         - Name: Packaging
           Actions:
             - InputArtifacts:
-                - Name: PipelineSourceCode
-                - Name: ProjectSourceCode
-              OutputArtifacts:
-                - Name: PackagingArtifacts
+                [Name: PipelineSourceCode, Name: ProjectSourceCode]
+              OutputArtifacts: [Name: PackagingArtifacts]
               Name: PackageSam
               ActionTypeId:
                 Category: Build
@@ -262,8 +303,7 @@ Resources:
 
         - Name: UploadLintingResult
           Actions:
-            - InputArtifacts:
-                - Name: taskcatArtifacts
+            - InputArtifacts: [Name: taskcatArtifacts]
               Name: TaskCatUpload
               ActionTypeId:
                 Category: Deploy
@@ -290,8 +330,24 @@ Resources:
               Configuration:
                 FunctionName:
                   Fn::ImportValue: !Sub "${ServerlessStackName}-InsertBuildResult"
-
               RunOrder: 1
+
+        - Name: FrontEndBuild
+          Actions:
+            - InputArtifacts:
+                [Name: FrontEndSourceCode, Name: PipelineSourceCode]
+              OutputArtifacts: [Name: FrontEndOutArtifacts]
+              Name: PackageSam
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: "1"
+                Provider: CodeBuild
+              Configuration:
+                ProjectName: !Ref FrontEndBuild
+                PrimarySource: PipelineSourceCode
+                EnvironmentVariables: '[{"name":"Release_ID","value":"#{codepipeline.PipelineExecutionId}","type":"PLAINTEXT"}]'
+              RunOrder: 2
 
         - Name: DeployDev
           Actions:
@@ -325,7 +381,7 @@ Resources:
                 NotificationArn:
                   Fn::ImportValue: !Sub "${MessagingStackName}-StageNotificationSNSTopicArn"
                 CustomData: "Review and approve deploying to stage with ID #{codepipeline.PipelineExecutionId}"
-                ExternalEntityLink: !Sub "${AmplifyBaseUrl}/report/#{codepipeline.PipelineExecutionId}"
+                ExternalEntityLink: !Sub "/report/#{codepipeline.PipelineExecutionId}"
               RunOrder: 1
             - InputArtifacts:
                 - Name: PackagingArtifacts
@@ -351,7 +407,7 @@ Resources:
                 NotificationArn:
                   Fn::ImportValue: !Sub "${MessagingStackName}-ProdNotificationSNSTopicArn"
                 CustomData: "Review and approve deploying to production"
-                ExternalEntityLink: !Sub "${AmplifyBaseUrl}/report/#{codepipeline.PipelineExecutionId}"
+                ExternalEntityLink: !Sub "/report/#{codepipeline.PipelineExecutionId}"
               ActionTypeId:
                 Category: Approval
                 Owner: AWS

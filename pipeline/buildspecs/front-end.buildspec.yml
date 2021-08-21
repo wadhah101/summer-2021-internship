@@ -1,0 +1,16 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      node: 14.17.2
+    commands:
+      - echo install phase started on `date`
+      - node --version
+  build:
+    commands:
+      - echo $Release_ID
+
+artifacts:
+  discard-paths: yes
+  files:
+    - output/${SAM_TEMPLATE_FILE}
