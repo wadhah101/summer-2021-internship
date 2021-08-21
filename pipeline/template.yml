@@ -314,7 +314,7 @@ Resources:
                 BucketName:
                   Fn::ImportValue: !Sub "${StorageStackName}-LintingBucketID"
                 Extract: true
-                ObjectKey: "#{codepipeline.PipelineExecutionId}"
+                ObjectKey: "#{codepipeline.PipelineExecutionId}/tcat"
 
               RunOrder: 1
 
@@ -332,12 +332,10 @@ Resources:
                   Fn::ImportValue: !Sub "${ServerlessStackName}-InsertBuildResult"
               RunOrder: 1
 
-        - Name: FrontEndBuild
-          Actions:
             - InputArtifacts:
                 [Name: FrontEndSourceCode, Name: PipelineSourceCode]
               OutputArtifacts: [Name: FrontEndOutArtifacts]
-              Name: PackageSam
+              Name: FrontEndBuild
               ActionTypeId:
                 Category: Build
                 Owner: AWS
@@ -348,6 +346,21 @@ Resources:
                 PrimarySource: PipelineSourceCode
                 EnvironmentVariables: '[{"name":"Release_ID","value":"#{codepipeline.PipelineExecutionId}","type":"PLAINTEXT"}]'
               RunOrder: 2
+
+        - Name: UploadFrontEnd
+          Actions:
+            - InputArtifacts: [Name: FrontEndOutArtifacts]
+              Name: FrontEndUpload
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Version: "1"
+                Provider: S3
+              Configuration:
+                BucketName:
+                  Fn::ImportValue: !Sub "${StorageStackName}-LintingBucketID"
+                Extract: true
+                ObjectKey: "#{codepipeline.PipelineExecutionId}"
 
         - Name: DeployDev
           Actions:

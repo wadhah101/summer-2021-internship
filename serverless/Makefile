@@ -3,7 +3,7 @@
 
 
 build-SNSPayloadLogger:
-	$(MAKE) HANDLER=src/mail/approve-mail.ts build-lambda-common
+	$(MAKE) HANDLER=src/database/addPipelineResult.ts build-lambda-common
 
 
 build-InsertBuildResult:

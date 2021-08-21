@@ -24,7 +24,6 @@ export const handler = async (
   context: Context
 ): Promise<void> => {
   if (!TABLE_NAME) throw new Error("TABLE_NAME not defined");
-  if (!AMPLIFY_WEB_HOOK) throw new Error("AMPLIFY_WEB_HOOK not defined");
 
   const inputArtifacts = event["CodePipeline.job"].data.inputArtifacts;
   const jobId = event["CodePipeline.job"].id;

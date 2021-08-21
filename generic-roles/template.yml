@@ -11,6 +11,10 @@ Parameters:
     Type: String
     Default: arn:aws:codecommit:us-west-1:477886346812:intership-sam-template-demo
 
+  FrontEndRepoArn:
+    Type: String
+    Default: arn:aws:codecommit:us-west-1:477886346812:internship-pipeline-report-front-end
+
 Resources:
   # roles
   CodePipelineRole:
@@ -34,6 +38,7 @@ Resources:
                 Resource:
                   - !Ref InfraRepoArn
                   - !Ref SelfRepoArn
+                  - !Ref FrontEndRepoArn
                 Effect: Allow
               - Action:
                   - logs:*
