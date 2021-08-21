@@ -14,9 +14,6 @@ Parameters:
   #   Description: location of the sam file to test and deploy
   #   Default: cfn-lint-pipeline-main
 
-  AmplifyWebHook:
-    Type: String
-
   StorageStackName:
     Type: String
     Description: location of the sam file to test and deploy
@@ -61,7 +58,6 @@ Resources:
     Properties:
       Environment:
         Variables:
-          AMPLIFY_WEB_HOOK: !Ref AmplifyWebHook
           TABLE_NAME:
             Fn::ImportValue: !Sub "${StorageStackName}-LintingTableID"
 

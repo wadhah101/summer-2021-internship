@@ -24,7 +24,6 @@
     "aws-sdk": "^2.961.0",
     "dotenv": "^10.0.0",
     "dotenv-json": "^1.0.0",
-    "got": "^11.8.2",
     "source-map-support": "^0.5.19",
     "unzipper": "^0.10.11",
     "uuid": "^3.3.2"

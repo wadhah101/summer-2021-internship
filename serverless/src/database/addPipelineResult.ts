@@ -3,7 +3,6 @@ import { DynamoDB, S3, CodePipeline } from "aws-sdk";
 import { FullCFNResult } from "../@types/FullCFNResult";
 import { CodePipelineEvent, Context } from "aws-lambda";
 import unzipper from "unzipper";
-import got from "got";
 import { Readable } from "stream";
 
 const { TABLE_NAME, AMPLIFY_WEB_HOOK } = process.env;
@@ -78,8 +77,6 @@ export const handler = async (
 
     const res = await db.put({ TableName: TABLE_NAME, Item }).promise();
     console.log(JSON.stringify(res));
-    const r = await got.post(AMPLIFY_WEB_HOOK);
-    console.log(r.body);
 
     await putJobSuccess();
   } catch (e: unknown) {
