@@ -9,7 +9,7 @@ phases:
   build:
     commands:
       - echo $Release_ID
-      - cd $CODEBUILD_SRC_DIR_FrontEndSourceCode yarn static
+      - cd $CODEBUILD_SRC_DIR_FrontEndSourceCode && yarn static
       - cp $CODEBUILD_SRC_DIR_FrontEndSourceCode/out dist
 
 artifacts:
