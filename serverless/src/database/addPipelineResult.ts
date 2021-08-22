@@ -41,7 +41,9 @@ export const handler = async (
     const nagArt = inputArtifacts.find((e) => e.name === "NagArtifacts");
     if (!nagArt) throw new Error("nag artifact not defined");
 
-    const executionID = event["CodePipeline.job"].id;
+    const executionID =
+      event["CodePipeline.job"].data.actionConfiguration.configuration
+        .UserParameters;
 
     const lintZipStream = s3
       .getObject({

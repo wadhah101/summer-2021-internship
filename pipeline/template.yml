@@ -330,6 +330,7 @@ Resources:
               Configuration:
                 FunctionName:
                   Fn::ImportValue: !Sub "${ServerlessStackName}-InsertBuildResult"
+                UserParameters: "#{codepipeline.PipelineExecutionId}"
               RunOrder: 1
 
             - InputArtifacts:
@@ -344,7 +345,7 @@ Resources:
               Configuration:
                 ProjectName: !Ref FrontEndBuild
                 PrimarySource: PipelineSourceCode
-                EnvironmentVariables: '[{"name":"Release_ID","value":"#{codepipeline.PipelineExecutionId}","type":"PLAINTEXT"}]'
+                EnvironmentVariables: '[{"name":"EXECUTION_ID","value":"#{codepipeline.PipelineExecutionId}","type":"PLAINTEXT"}]'
               RunOrder: 2
 
         - Name: UploadFrontEnd
