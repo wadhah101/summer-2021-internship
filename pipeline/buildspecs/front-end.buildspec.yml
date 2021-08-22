@@ -5,12 +5,13 @@ phases:
       nodejs: 14
     commands:
       - echo install phase started on `date`
-      - yarn install
+      - cd $CODEBUILD_SRC_DIR_FrontEndSourceCode && yarn install
   build:
     commands:
       - echo $Release_ID
-      - yarn static
+      - cd $CODEBUILD_SRC_DIR_FrontEndSourceCode yarn static
+      - cp $CODEBUILD_SRC_DIR_FrontEndSourceCode/out dist
 
 artifacts:
   files:
-    - out/**/*
+    - dist/**/*
