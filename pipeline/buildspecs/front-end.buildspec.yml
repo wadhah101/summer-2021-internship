@@ -10,8 +10,8 @@ phases:
     commands:
       - echo $Release_ID
       - cd $CODEBUILD_SRC_DIR_FrontEndSourceCode && yarn static
-      - mv  $CODEBUILD_SRC_DIR_FrontEndSourceCode/out dist
+      - mv  $CODEBUILD_SRC_DIR_FrontEndSourceCode/out /dist
 
 artifacts:
   files:
-    - dist/**/*
+    - /dist/**/*
