@@ -5,12 +5,12 @@ phases:
       nodejs: 14
     commands:
       - echo install phase started on `date`
-      - node --version
+      - yarn install
   build:
     commands:
       - echo $Release_ID
+      - yarn static
 
 artifacts:
-  discard-paths: yes
   files:
-    - output/${SAM_TEMPLATE_FILE}
+    - out/**/*
