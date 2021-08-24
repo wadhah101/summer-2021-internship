@@ -8,8 +8,6 @@ phases:
       - cd $CODEBUILD_SRC_DIR_FrontEndSourceCode && yarn install
   build:
     commands:
-      - echo $Release_ID
-      - OLD=`pwd`
       - cd $CODEBUILD_SRC_DIR_FrontEndSourceCode && yarn static
 
 artifacts:

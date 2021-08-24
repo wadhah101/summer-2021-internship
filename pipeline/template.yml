@@ -345,7 +345,7 @@ Resources:
               Configuration:
                 ProjectName: !Ref FrontEndBuild
                 PrimarySource: PipelineSourceCode
-                EnvironmentVariables: '[{"name":"EXECUTION_ID","value":"#{codepipeline.PipelineExecutionId}","type":"PLAINTEXT"}]'
+                EnvironmentVariables: '[{"name":"EXECUTION_ID","value":"#{codepipeline.PipelineExecutionId}","type":"PLAINTEXT"},{"name":"BASE_PATH","value":"/#{codepipeline.PipelineExecutionId}/out","type":"PLAINTEXT"}]'
               RunOrder: 2
 
         - Name: UploadFrontEnd
