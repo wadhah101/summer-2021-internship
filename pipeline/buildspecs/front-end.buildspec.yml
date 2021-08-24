@@ -13,6 +13,7 @@ phases:
       - cd $CODEBUILD_SRC_DIR_FrontEndSourceCode && yarn static
       - pwd
       - mv  $CODEBUILD_SRC_DIR_FrontEndSourceCode/out dist
+      - ls -R
 
 artifacts:
   files:
