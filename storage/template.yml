@@ -40,6 +40,8 @@ Resources:
 Outputs:
   LintingWebsite:
     Value: !GetAtt LintingBucket.WebsiteURL
+    Export:
+      Name: !Sub "${AWS::StackName}-LintingBucketUrl"
 
   LintingTableID:
     Value: !Ref LintingTable

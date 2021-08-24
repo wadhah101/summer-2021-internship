@@ -395,7 +395,11 @@ Resources:
                 NotificationArn:
                   Fn::ImportValue: !Sub "${MessagingStackName}-StageNotificationSNSTopicArn"
                 CustomData: "Review and approve deploying to stage with ID #{codepipeline.PipelineExecutionId}"
-                ExternalEntityLink: !Sub "/report/#{codepipeline.PipelineExecutionId}"
+                ExternalEntityLink: !Sub
+                  - "${BUCKET_URL}/#{codepipeline.PipelineExecutionId}/out"
+                  - BUCKET_URL:
+                      Fn::ImportValue: !Sub "${StorageStackName}-LintingBucketUrl"
+
               RunOrder: 1
             - InputArtifacts:
                 - Name: PackagingArtifacts
@@ -421,8 +425,10 @@ Resources:
                 NotificationArn:
                   Fn::ImportValue: !Sub "${MessagingStackName}-ProdNotificationSNSTopicArn"
                 CustomData: "Review and approve deploying to production"
-                ExternalEntityLink: !Sub "/report/#{codepipeline.PipelineExecutionId}"
-              ActionTypeId:
+                ExternalEntityLink: !Sub
+                  - "${BUCKET_URL}/#{codepipeline.PipelineExecutionId}/out"
+                  - BUCKET_URL:
+                      Fn::ImportValue: !Sub "${StorageStackName}-LintingBucketUrl"              ActionTypeId:
                 Category: Approval
                 Owner: AWS
                 Version: "1"
