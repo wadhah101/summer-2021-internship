@@ -11,9 +11,8 @@ phases:
       - echo $Release_ID
       - OLD=`pwd`
       - cd $CODEBUILD_SRC_DIR_FrontEndSourceCode && yarn static
-      - cd $OLD
-      - mv $CODEBUILD_SRC_DIR_FrontEndSourceCode/out dist
 
 artifacts:
   files:
-    - dist/**/*
+    - out
+  base-directory: $CODEBUILD_SRC_DIR_FrontEndSourceCode
