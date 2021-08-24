@@ -428,7 +428,8 @@ Resources:
                 ExternalEntityLink: !Sub
                   - "${BUCKET_URL}/#{codepipeline.PipelineExecutionId}/out"
                   - BUCKET_URL:
-                      Fn::ImportValue: !Sub "${StorageStackName}-LintingBucketUrl"              ActionTypeId:
+                      Fn::ImportValue: !Sub "${StorageStackName}-LintingBucketUrl"
+              ActionTypeId:
                 Category: Approval
                 Owner: AWS
                 Version: "1"
