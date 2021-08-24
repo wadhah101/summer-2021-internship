@@ -14,5 +14,5 @@ phases:
 
 artifacts:
   files:
-    - out
+    - out/**/*
   base-directory: $CODEBUILD_SRC_DIR_FrontEndSourceCode
