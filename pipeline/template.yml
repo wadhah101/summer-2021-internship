@@ -188,6 +188,53 @@ Resources:
 
   #################
 
+  # event
+
+  InvokePipelineRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - events.amazonaws.com
+            Action:
+              - "sts:AssumeRole"
+      Path: /
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: "codepipeline:*"
+                Resource: !Sub "arn:${AWS::Partition}:codepipeline:${AWS::Region}:${AWS::AccountId}:${Pipeline}"
+
+  PushEventRule:
+    Type: "AWS::Events::Rule"
+    Properties:
+      RoleArn: !GetAtt InvokePipelineRole.Arn
+      EventPattern:
+        source:
+          - aws.codecommit
+        resources:
+          [
+            !Sub "arn:aws:codecommit:${AWS::Region}:${AWS::AccountId}:${InfraRepo}",
+          ]
+        detail-type:
+          - CodeCommit Repository State Change
+        detail:
+          referenceType: ["branch"]
+          referenceName: [!Ref InfraRepoBranch]
+
+      State: ENABLED
+      Targets:
+        - Arn: !Sub "arn:${AWS::Partition}:codepipeline:${AWS::Region}:${AWS::AccountId}:${Pipeline}"
+          RoleArn: !GetAtt InvokePipelineRole.Arn
+          Id: Id1234
+
   # PIPELINE
   Pipeline:
     Type: AWS::CodePipeline::Pipeline
@@ -210,6 +257,7 @@ Resources:
               Configuration:
                 RepositoryName: !Ref InfraRepo
                 BranchName: !Ref InfraRepoBranch
+                PollForSourceChanges: false
 
             - InputArtifacts: []
               Name: FrontEndSource
