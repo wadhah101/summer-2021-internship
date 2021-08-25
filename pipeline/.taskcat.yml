@@ -1,8 +1,8 @@
 general:
-  s3_bucket: democat
+  s3_bucket: ${BUCKET_NAME}
 
 project:
-  name: taskcat-example
+  name: tcat-test
   regions:
     - us-west-1
   # lambdas are already packaged in previous stage , setting this to true (default) will crash the container as apparently it needs docker and it doesn't seem to work well inside a container image defined in codebuild
