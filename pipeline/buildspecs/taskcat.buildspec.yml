@@ -12,7 +12,7 @@ phases:
     commands:
       - echo Build phase started on `date`
       - cp  $CODEBUILD_SRC_DIR_PackagingArtifacts/${SAM_TEMPLATE_FILE} app.package.yml
-      - sed -i -e "s/\${BUCKET_NAME}/$BUCKET_NAME/g" .taskcat.yml
+      - sed -i -e "s/\${BUCKET_NAME}/$BUCKET_NAME/g" pipeline/.taskcat.yml
       - taskcat test run -d -i pipeline/.taskcat.yml
   post_build:
     commands:
