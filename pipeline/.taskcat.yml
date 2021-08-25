@@ -1,5 +1,5 @@
 general:
-  s3_bucket: $[BUCKET_NAME]
+  s3_bucket: ${BUCKET_NAME}
 
 project:
   name: tcat-test
