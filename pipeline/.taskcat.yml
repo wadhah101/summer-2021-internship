@@ -1,3 +1,6 @@
+general:
+  s3_bucket: democat
+
 project:
   name: taskcat-example
   regions:
